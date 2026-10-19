@@ -1,0 +1,22 @@
+{
+  "name": "ats-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Backend inicial del nuevo ATS con Express y PostgreSQL",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js",
+    "check": "node --check src/server.js && node --check src/app.js && node --check src/db.js && node --check src/controllers/loginController.js && node --check src/controllers/logoutController.js && node --check src/controllers/createUserController.js && node --check src/controllers/requirementController.js && node --check src/controllers/vacancyController.js && node --check src/controllers/agendaController.js && node --check src/controllers/applicantController.js && node --check src/routes/authRoutes.js && node --check src/routes/requirementRoutes.js && node --check src/routes/vacancyRoutes.js && node --check src/routes/agendaRoutes.js && node --check src/routes/applicantRoutes.js && node --check src/middleware/authenticate.js && node --check src/middleware/authorizeAdmin.js && node --check src/middleware/validateLogin.js && node --check src/middleware/validateCreateUser.js && node --check src/middleware/validateRequirement.js && node --check src/middleware/validateVacancy.js && node --check src/middleware/validateVacancyStatus.js && node --check src/middleware/validateApplicant.js && node --check src/services/authService.js && node --check src/services/userService.js && node --check src/services/catalogService.js && node --check src/services/agendaService.js && node --check src/services/applicantService.js && node --check src/services/agendaCalendar.js && node --check src/repositories/userRepository.js && node --check src/repositories/catalogRepository.js && node --check src/repositories/agendaRepository.js && node --check src/repositories/applicantRepository.js && node --check src/errors/AppError.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.3",
+    "pg": "^8.16.3"
+  }
+}
