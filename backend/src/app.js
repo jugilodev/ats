@@ -4,6 +4,8 @@ import express from "express";
 import authRoutes from "./routes/authRoutes.js";
 import agendaRoutes from "./routes/agendaRoutes.js";
 import applicantRoutes from "./routes/applicantRoutes.js";
+import applicantConsentRoutes from "./routes/applicantConsentRoutes.js";
+import consentRoutes from "./routes/consentRoutes.js";
 import requirementRoutes from "./routes/requirementRoutes.js";
 import vacancyRoutes from "./routes/vacancyRoutes.js";
 
@@ -16,17 +18,19 @@ app.use(
     credentials: true,
   }),
 );
-app.use(express.json());
+app.use(express.json({ limit: "750kb" }));
 app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/agenda", agendaRoutes);
 app.use("/api/aspirantes", applicantRoutes);
+app.use("/api/aspirantes", applicantConsentRoutes);
+app.use("/api/consentimiento-datos", consentRoutes);
 app.use("/api/requisitos", requirementRoutes);
 app.use("/api/vacantes", vacancyRoutes);
 
 app.use((error, _req, res, _next) => {
-  const statusCode = error.statusCode ?? 500;
+  const statusCode = error.statusCode ?? error.status ?? 500;
 
   if (statusCode === 500) {
     console.error("Error no controlado en la API:", error);

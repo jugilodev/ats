@@ -70,7 +70,7 @@ export const removeApplicant = async (id) => {
   } catch (error) {
     if (error.code === "23503") {
       throw new AppError(
-        "No se puede eliminar este aspirante porque tiene postulaciones o una entrevista asignada",
+        "No se puede eliminar este aspirante porque tiene postulaciones, una entrevista asignada o una autorización registrada",
         409,
       );
     }

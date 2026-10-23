@@ -19,7 +19,14 @@ const fields = [
   ["correo", "Correo electrónico", "email"],
 ];
 
-function ApplicantsTable({ applicants, onEdit, onDelete, deletingId }) {
+function ApplicantsTable({
+  applicants,
+  onEdit,
+  onDelete,
+  onSendAuthorization,
+  deletingId,
+  sendingId,
+}) {
   if (applicants.length === 0) {
     return <p className="empty">Aún no hay aspirantes registrados.</p>;
   }
@@ -33,6 +40,7 @@ function ApplicantsTable({ applicants, onEdit, onDelete, deletingId }) {
             <th>Cédula</th>
             <th>Celular</th>
             <th>Correo electrónico</th>
+            <th>Tratamiento de datos</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -45,8 +53,33 @@ function ApplicantsTable({ applicants, onEdit, onDelete, deletingId }) {
               <td data-label="Cédula">{applicant.numero_cedula}</td>
               <td data-label="Celular">{applicant.numero_celular}</td>
               <td data-label="Correo electrónico">{applicant.correo}</td>
+              <td data-label="Tratamiento de datos">
+                {applicant.autorizacion_estado === "firmada"
+                  ? "Firmada"
+                  : applicant.autorizacion_estado === "pendiente" &&
+                      new Date(applicant.autorizacion_expira_en).getTime() > Date.now()
+                    ? "Pendiente"
+                    : applicant.autorizacion_estado
+                      ? "Enlace vencido"
+                      : "Sin enviar"}
+              </td>
               <td data-label="Acciones">
                 <div className="applicant-actions">
+                  <button
+                    className="text-button"
+                    disabled={
+                      applicant.autorizacion_estado === "firmada" ||
+                      sendingId === applicant.id
+                    }
+                    onClick={() => onSendAuthorization(applicant)}
+                    type="button"
+                  >
+                    {sendingId === applicant.id
+                      ? "Enviando..."
+                      : applicant.autorizacion_estado
+                        ? "Reenviar autorización"
+                        : "Enviar autorización"}
+                  </button>
                   <button
                     className="text-button"
                     onClick={() => onEdit(applicant)}
@@ -120,6 +153,7 @@ export default function ApplicantsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
+  const [sendingId, setSendingId] = useState(null);
 
   const loadApplicants = async (requestedPage = page) => {
     setLoading(true);
@@ -218,6 +252,32 @@ export default function ApplicantsPage() {
     }
   };
 
+  const sendAuthorization = async (applicant) => {
+    if (applicant.autorizacion_estado === "firmada") return;
+    if (
+      !window.confirm(
+        `¿Enviar la autorización de tratamiento de datos a ${applicant.correo}?`,
+      )
+    ) {
+      return;
+    }
+
+    setError("");
+    setMessage("");
+    setSendingId(applicant.id);
+    try {
+      await apiRequest(`/aspirantes/${applicant.id}/tratamiento/enviar`, {
+        method: "POST",
+      });
+      setMessage(`Autorización enviada a ${applicant.correo}. El enlace vence en 24 horas.`);
+      await loadApplicants(page);
+    } catch (requestError) {
+      setError(requestError.message);
+    } finally {
+      setSendingId(null);
+    }
+  };
+
   return (
     <div className="applicants-page">
       <FormMessage error={error} message={message} />
@@ -291,6 +351,8 @@ export default function ApplicantsPage() {
               deletingId={deletingId}
               onDelete={removeApplicant}
               onEdit={editApplicant}
+              onSendAuthorization={sendAuthorization}
+              sendingId={sendingId}
             />
             <Pagination pagination={pagination} onChange={loadApplicants} />
           </>
