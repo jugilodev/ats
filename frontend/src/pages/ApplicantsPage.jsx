@@ -25,9 +25,12 @@ function ApplicantsTable({
   onDelete,
   onSendAuthorization,
   onSendExam,
+  onGenerateReport,
   deletingId,
   sendingId,
   sendingExamId,
+  reportBusy,
+  generatingReportId,
 }) {
   if (applicants.length === 0) {
     return <p className="empty">Aún no hay aspirantes registrados.</p>;
@@ -111,6 +114,18 @@ function ApplicantsTable({
                         ? "Reenviar prueba 16PF"
                         : "Enviar prueba 16PF"}
                   </button>
+                  {applicant.prueba16pf_estado === "completada" && (
+                    <button
+                        className="text-button"
+                        disabled={reportBusy}
+                        onClick={() => onGenerateReport(applicant)}
+                        type="button"
+                    >
+                        {generatingReportId === applicant.id
+                          ? "Cargando postulaciones..."
+                          : "Generar guía 16PF"}
+                    </button>
+                  )}
                   <button
                     className="text-button"
                     onClick={() => onEdit(applicant)}
@@ -132,6 +147,77 @@ function ApplicantsTable({
           ))}
         </tbody>
       </table>
+    </div>
+  );
+}
+
+function ReportPostulationPanel({
+  applicant,
+  postulations,
+  selectedPostulationId,
+  loading,
+  sending,
+  onClose,
+  onSelect,
+  onSubmit,
+}) {
+  if (!applicant) return null;
+
+  return (
+    <div className="applicant-report-panel">
+      <div className="applicant-form-heading">
+        <h3>Guía exploratoria para {applicant.nombre} {applicant.apellido}</h3>
+        <p className="muted">
+          El informe es orientativo, no puntuado ni estandarizado, y no determina
+          aptitud ni recomienda decisiones de contratación. Requiere revisión
+          profesional.
+        </p>
+      </div>
+      {loading ? (
+        <p className="empty">Cargando postulaciones...</p>
+      ) : (
+        <form className="applicant-report-form" onSubmit={onSubmit}>
+          <label className="field">
+            <span>Vacante de la postulación</span>
+            <select
+              onChange={(event) => onSelect(event.target.value)}
+              required
+              value={selectedPostulationId}
+            >
+              {postulations.map((postulation) => (
+                <option
+                  key={postulation.postulacion_id}
+                  value={postulation.postulacion_id}
+                >
+                  {postulation.vacante_nombre} · {postulation.postulacion_estado}
+                </option>
+              ))}
+            </select>
+          </label>
+          <p className="muted">
+            Se consultarán las respuestas y requisitos de esta postulación. El
+            análisis se procesa en Ollama local y se envía al correo configurado
+            para RR. HH.; no se guarda una copia del informe.
+          </p>
+          <div className="form-actions">
+            <button
+              className="secondary"
+              disabled={loading || sending}
+              onClick={onClose}
+              type="button"
+            >
+              Cancelar
+            </button>
+            <button
+              className="primary"
+              disabled={sending || postulations.length === 0}
+              type="submit"
+            >
+              {sending ? "Generando y enviando..." : "Generar y enviar guía"}
+            </button>
+          </div>
+        </form>
+      )}
     </div>
   );
 }
@@ -186,6 +272,11 @@ export default function ApplicantsPage() {
   const [deletingId, setDeletingId] = useState(null);
   const [sendingId, setSendingId] = useState(null);
   const [sendingExamId, setSendingExamId] = useState(null);
+  const [reportApplicant, setReportApplicant] = useState(null);
+  const [reportPostulations, setReportPostulations] = useState([]);
+  const [selectedPostulationId, setSelectedPostulationId] = useState("");
+  const [loadingReportPostulationsId, setLoadingReportPostulationsId] = useState(null);
+  const [generatingReportId, setGeneratingReportId] = useState(null);
 
   const loadApplicants = async (requestedPage = page) => {
     setLoading(true);
@@ -333,6 +424,70 @@ export default function ApplicantsPage() {
     }
   };
 
+  const openReportPanel = async (applicant) => {
+    if (loadingReportPostulationsId || generatingReportId) return;
+    setError("");
+    setMessage("");
+    setReportApplicant(applicant);
+    setReportPostulations([]);
+    setSelectedPostulationId("");
+    setLoadingReportPostulationsId(applicant.id);
+    try {
+      const data = await apiRequest(
+        `/aspirantes/${applicant.id}/informe-16pf/postulaciones`,
+      );
+      if (data.postulaciones.length === 0) {
+        setReportApplicant(null);
+        setError("Este aspirante no tiene postulaciones asociadas.");
+        return;
+      }
+      setReportPostulations(data.postulaciones);
+      setSelectedPostulationId(String(data.postulaciones[0].postulacion_id));
+    } catch (requestError) {
+      setReportApplicant(null);
+      setError(requestError.message);
+    } finally {
+      setLoadingReportPostulationsId(null);
+    }
+  };
+
+  const closeReportPanel = () => {
+    if (loadingReportPostulationsId || generatingReportId) return;
+    setReportApplicant(null);
+    setReportPostulations([]);
+    setSelectedPostulationId("");
+  };
+
+  const submitReport = async (event) => {
+    event.preventDefault();
+    if (!reportApplicant || !selectedPostulationId) return;
+    if (
+      !window.confirm(
+        "Se consultarán las respuestas del aspirante y se enviará una guía exploratoria al correo configurado para RR. HH. ¿Continuar?",
+      )
+    ) {
+      return;
+    }
+
+    setError("");
+    setMessage("");
+    setGeneratingReportId(reportApplicant.id);
+    try {
+      const result = await apiRequest(
+        `/aspirantes/${reportApplicant.id}/informe-16pf/postulaciones/${selectedPostulationId}/enviar`,
+        { method: "POST" },
+      );
+      setMessage(result.message);
+      setReportApplicant(null);
+      setReportPostulations([]);
+      setSelectedPostulationId("");
+    } catch (requestError) {
+      setError(requestError.message);
+    } finally {
+      setGeneratingReportId(null);
+    }
+  };
+
   return (
     <div className="applicants-page">
       <FormMessage error={error} message={message} />
@@ -397,6 +552,16 @@ export default function ApplicantsPage() {
             </form>
           </div>
         )}
+        <ReportPostulationPanel
+          applicant={reportApplicant}
+          loading={loadingReportPostulationsId === reportApplicant?.id}
+          onClose={closeReportPanel}
+          onSelect={setSelectedPostulationId}
+          onSubmit={submitReport}
+          postulations={reportPostulations}
+          selectedPostulationId={selectedPostulationId}
+          sending={generatingReportId === reportApplicant?.id}
+        />
         {loading ? (
           <p className="empty">Cargando aspirantes...</p>
         ) : (
@@ -408,8 +573,15 @@ export default function ApplicantsPage() {
               onEdit={editApplicant}
               onSendAuthorization={sendAuthorization}
               onSendExam={sendExam}
+              onGenerateReport={openReportPanel}
               sendingId={sendingId}
               sendingExamId={sendingExamId}
+              reportBusy={Boolean(
+                loadingReportPostulationsId || generatingReportId,
+              )}
+              generatingReportId={
+                loadingReportPostulationsId || generatingReportId
+              }
             />
             <Pagination pagination={pagination} onChange={loadApplicants} />
           </>

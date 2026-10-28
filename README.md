@@ -70,3 +70,16 @@ En la tabla de aspirantes, **Enviar prueba 16PF** envía una invitación persona
 El portal permite guardar cada respuesta al seleccionarla, regresar a preguntas anteriores y reanudar desde la primera pregunta pendiente. La finalización exige responder todas las preguntas. Al comenzar se congela una copia ordenada de las preguntas y opciones activas para evitar que cambios posteriores alteren el intento.
 
 Aplica `backend/database/migrations/003_prueba_16pf_portal.sql` después de `002_prueba_16pf.sql`. La configuración de correo y `PUBLIC_APP_URL` usa las mismas variables SMTP documentadas arriba. En producción, publica el frontend por HTTPS y configura el hosting para enviar `/prueba-16pf/*` a la aplicación React (fallback a `index.html`). El portal protege la sesión con una cookie `httpOnly` y limita los intentos fallidos de inicio de sesión por IP.
+
+### Guía exploratoria local para RR. HH.
+
+Cuando la prueba está completada, **Generar guía 16PF** permite elegir una postulación y envía al correo configurado un informe generado por Ollama local. Se consultan las respuestas y la vacante/requisitos seleccionados; no se envían cédula, teléfono ni correo del aspirante al modelo. El informe no se almacena en la base.
+
+Configura estas variables en `backend/.env`:
+
+- `OLLAMA_BASE_URL=http://127.0.0.1:11434` (host local; en Compose puede usarse el hostname local del servicio).
+- `OLLAMA_MODEL=qwen2.5:7b`.
+- `OLLAMA_TIMEOUT_MS=180000` (rango permitido: 5000–300000 ms).
+- `HR_REPORT_EMAIL`: dirección fija del equipo de RR. HH. que recibirá los informes.
+
+Instala e inicia Ollama en el mismo equipo/red local, descarga el modelo (`ollama pull qwen2.5:7b`) y mantén el servicio disponible. El backend rechazará destinos Ollama no locales para evitar enviar datos del cuestionario a servicios externos. La generación se limita a observaciones exploratorias y preguntas para entrevista: no calcula puntuaciones ni baremos, no es una interpretación estandarizada o diagnóstico y no recomienda contratar o descartar. Toda observación requiere revisión profesional y no debe usarse como decisión automatizada.

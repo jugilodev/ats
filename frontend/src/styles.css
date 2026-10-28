@@ -96,6 +96,10 @@ button { cursor: pointer; }
 .applicants-heading { gap: 12px; }
 .applicants-heading-actions { display: flex; align-items: center; gap: 12px; }
 .applicant-form-panel { margin-top: 20px; padding-top: 19px; border-top: 1px solid var(--border); }
+.applicant-report-panel { margin-top: 20px; padding: 18px; border: 1px solid #dce9df; border-radius: 10px; background: #f9fcfa; }
+.applicant-report-form { display: grid; max-width: 520px; gap: 12px; }
+.applicant-report-form .muted { margin: 0; }
+.applicant-report-form .form-actions { justify-content: flex-end; }
 .applicant-form-heading h3 { margin: 0; color: #34483c; font: 700 15px Manrope, sans-serif; }
 .applicant-form-heading .muted { margin: 5px 0 15px; }
 .applicant-form .form-submit { justify-content: flex-end; }
