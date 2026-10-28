@@ -34,6 +34,99 @@ CREATE TABLE IF NOT EXISTS aspirantes (
 CREATE INDEX IF NOT EXISTS aspirantes_correo_lower_idx
   ON aspirantes (LOWER(correo));
 
+CREATE TABLE IF NOT EXISTS preguntas16pf (
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  pregunta TEXT NOT NULL CHECK (BTRIM(pregunta) <> ''),
+  opcion_a TEXT NOT NULL CHECK (BTRIM(opcion_a) <> ''),
+  opcion_b TEXT NOT NULL CHECK (BTRIM(opcion_b) <> ''),
+  opcion_c TEXT NOT NULL CHECK (BTRIM(opcion_c) <> ''),
+  orden INTEGER NOT NULL UNIQUE CHECK (orden > 0),
+  activa BOOLEAN NOT NULL DEFAULT TRUE,
+  creado_en TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  actualizado_en TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CONSTRAINT preguntas16pf_opciones_distintas_check CHECK (
+    LOWER(BTRIM(opcion_a)) <> LOWER(BTRIM(opcion_b))
+    AND LOWER(BTRIM(opcion_a)) <> LOWER(BTRIM(opcion_c))
+    AND LOWER(BTRIM(opcion_b)) <> LOWER(BTRIM(opcion_c))
+  )
+);
+
+CREATE TABLE IF NOT EXISTS pruebas16pf_intentos (
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  aspirante_id BIGINT NOT NULL UNIQUE
+    REFERENCES aspirantes (id) ON DELETE RESTRICT,
+  estado VARCHAR(20) NOT NULL DEFAULT 'invitada',
+  iniciada_en TIMESTAMPTZ,
+  completada_en TIMESTAMPTZ,
+  invitacion_token_hash CHAR(64) UNIQUE,
+  invitacion_expira_en TIMESTAMPTZ,
+  invitacion_enviada_en TIMESTAMPTZ,
+  creado_en TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  actualizado_en TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CONSTRAINT pruebas16pf_intentos_estado_check CHECK (
+    (estado = 'invitada' AND iniciada_en IS NULL AND completada_en IS NULL)
+    OR
+    (estado = 'en_progreso' AND iniciada_en IS NOT NULL AND completada_en IS NULL)
+    OR
+    (estado = 'completada' AND iniciada_en IS NOT NULL AND completada_en IS NOT NULL)
+  )
+);
+
+CREATE TABLE IF NOT EXISTS pruebas16pf_intento_preguntas (
+  intento_id BIGINT NOT NULL
+    REFERENCES pruebas16pf_intentos (id) ON DELETE RESTRICT,
+  pregunta_id BIGINT NOT NULL
+    REFERENCES preguntas16pf (id) ON DELETE RESTRICT,
+  orden INTEGER NOT NULL CHECK (orden > 0),
+  pregunta TEXT NOT NULL,
+  opcion_a TEXT NOT NULL,
+  opcion_b TEXT NOT NULL,
+  opcion_c TEXT NOT NULL,
+  PRIMARY KEY (intento_id, pregunta_id),
+  CONSTRAINT pruebas16pf_intento_preguntas_orden_unique
+    UNIQUE (intento_id, orden)
+);
+
+CREATE TABLE IF NOT EXISTS pruebas16pf_respuestas (
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  intento_id BIGINT NOT NULL
+    REFERENCES pruebas16pf_intentos (id) ON DELETE RESTRICT,
+  pregunta_id BIGINT NOT NULL
+    REFERENCES preguntas16pf (id) ON DELETE RESTRICT,
+  opcion_elegida CHAR(1) NOT NULL
+    CHECK (opcion_elegida IN ('A', 'B', 'C')),
+  respondida_en TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  actualizado_en TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CONSTRAINT pruebas16pf_respuestas_intento_pregunta_unique
+    UNIQUE (intento_id, pregunta_id)
+);
+
+CREATE INDEX IF NOT EXISTS preguntas16pf_activas_orden_idx
+  ON preguntas16pf (orden)
+  WHERE activa = TRUE;
+
+CREATE INDEX IF NOT EXISTS pruebas16pf_intentos_estado_idx
+  ON pruebas16pf_intentos (estado, iniciada_en);
+
+CREATE INDEX IF NOT EXISTS pruebas16pf_intentos_invitacion_expira_idx
+  ON pruebas16pf_intentos (invitacion_expira_en)
+  WHERE estado <> 'completada';
+
+CREATE INDEX IF NOT EXISTS pruebas16pf_intento_preguntas_orden_idx
+  ON pruebas16pf_intento_preguntas (intento_id, orden);
+
+CREATE INDEX IF NOT EXISTS pruebas16pf_respuestas_pregunta_idx
+  ON pruebas16pf_respuestas (pregunta_id, intento_id);
+
+CREATE TABLE IF NOT EXISTS pruebas16pf_login_bloqueos (
+  ip_hash CHAR(64) PRIMARY KEY,
+  intentos_fallidos SMALLINT NOT NULL DEFAULT 0
+    CHECK (intentos_fallidos BETWEEN 0 AND 10),
+  ventana_inicia_en TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  bloqueado_hasta TIMESTAMPTZ,
+  actualizado_en TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
 CREATE TABLE IF NOT EXISTS aspirante_autorizaciones_datos (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   aspirante_id BIGINT NOT NULL UNIQUE

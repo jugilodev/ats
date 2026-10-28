@@ -18,10 +18,21 @@ export const findApplicants = async ({ limit, offset }) => {
               a.numero_celular, a.correo, a.creado_en, a.actualizado_en,
               autorizacion.estado AS autorizacion_estado,
               autorizacion.enviada_en AS autorizacion_enviada_en,
-              autorizacion.expira_en AS autorizacion_expira_en
+              autorizacion.expira_en AS autorizacion_expira_en,
+              prueba.estado AS prueba16pf_estado,
+              prueba.invitacion_enviada_en AS prueba16pf_enviada_en,
+              prueba.invitacion_expira_en AS prueba16pf_expira_en,
+              (SELECT COUNT(*)::int
+               FROM pruebas16pf_intento_preguntas ip
+               WHERE ip.intento_id = prueba.id) AS prueba16pf_total,
+              (SELECT COUNT(*)::int
+               FROM pruebas16pf_respuestas r
+               WHERE r.intento_id = prueba.id) AS prueba16pf_respondidas
        FROM aspirantes a
        LEFT JOIN aspirante_autorizaciones_datos autorizacion
          ON autorizacion.aspirante_id = a.id
+       LEFT JOIN pruebas16pf_intentos prueba
+         ON prueba.aspirante_id = a.id
        ORDER BY a.apellido, a.nombre, a.id
        LIMIT $1 OFFSET $2`,
       [limit, offset],

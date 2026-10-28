@@ -24,8 +24,10 @@ function ApplicantsTable({
   onEdit,
   onDelete,
   onSendAuthorization,
+  onSendExam,
   deletingId,
   sendingId,
+  sendingExamId,
 }) {
   if (applicants.length === 0) {
     return <p className="empty">Aún no hay aspirantes registrados.</p>;
@@ -41,6 +43,7 @@ function ApplicantsTable({
             <th>Celular</th>
             <th>Correo electrónico</th>
             <th>Tratamiento de datos</th>
+            <th>Prueba 16PF</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -63,6 +66,19 @@ function ApplicantsTable({
                       ? "Enlace vencido"
                       : "Sin enviar"}
               </td>
+              <td data-label="Prueba 16PF">
+                {applicant.prueba16pf_estado === "completada"
+                  ? "Completada"
+                  : applicant.prueba16pf_estado === "en_progreso"
+                    ? `En progreso · ${applicant.prueba16pf_respondidas || 0}/${applicant.prueba16pf_total || 0}`
+                    : applicant.prueba16pf_estado === "invitada" &&
+                        applicant.prueba16pf_expira_en &&
+                        new Date(applicant.prueba16pf_expira_en).getTime() > Date.now()
+                      ? "Invitada"
+                      : applicant.prueba16pf_estado
+                        ? "Enlace vencido"
+                        : "Sin enviar"}
+              </td>
               <td data-label="Acciones">
                 <div className="applicant-actions">
                   <button
@@ -79,6 +95,21 @@ function ApplicantsTable({
                       : applicant.autorizacion_estado
                         ? "Reenviar autorización"
                         : "Enviar autorización"}
+                  </button>
+                  <button
+                    className="text-button"
+                    disabled={
+                      applicant.prueba16pf_estado === "completada" ||
+                      sendingExamId === applicant.id
+                    }
+                    onClick={() => onSendExam(applicant)}
+                    type="button"
+                  >
+                    {sendingExamId === applicant.id
+                      ? "Enviando..."
+                      : applicant.prueba16pf_estado
+                        ? "Reenviar prueba 16PF"
+                        : "Enviar prueba 16PF"}
                   </button>
                   <button
                     className="text-button"
@@ -154,6 +185,7 @@ export default function ApplicantsPage() {
   const [saving, setSaving] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
   const [sendingId, setSendingId] = useState(null);
+  const [sendingExamId, setSendingExamId] = useState(null);
 
   const loadApplicants = async (requestedPage = page) => {
     setLoading(true);
@@ -278,6 +310,29 @@ export default function ApplicantsPage() {
     }
   };
 
+  const sendExam = async (applicant) => {
+    if (applicant.prueba16pf_estado === "completada") return;
+    const confirmation = applicant.prueba16pf_estado
+      ? `¿Reenviar la invitación 16PF a ${applicant.correo}? Se conservarán las respuestas guardadas.`
+      : `¿Enviar la invitación 16PF a ${applicant.correo}?`;
+    if (!window.confirm(confirmation)) return;
+
+    setError("");
+    setMessage("");
+    setSendingExamId(applicant.id);
+    try {
+      await apiRequest(`/aspirantes/${applicant.id}/prueba-16pf/enviar`, {
+        method: "POST",
+      });
+      setMessage(`Invitación 16PF enviada a ${applicant.correo}. El enlace vence en 24 horas.`);
+      await loadApplicants(page);
+    } catch (requestError) {
+      setError(requestError.message);
+    } finally {
+      setSendingExamId(null);
+    }
+  };
+
   return (
     <div className="applicants-page">
       <FormMessage error={error} message={message} />
@@ -352,7 +407,9 @@ export default function ApplicantsPage() {
               onDelete={removeApplicant}
               onEdit={editApplicant}
               onSendAuthorization={sendAuthorization}
+              onSendExam={sendExam}
               sendingId={sendingId}
+              sendingExamId={sendingExamId}
             />
             <Pagination pagination={pagination} onChange={loadApplicants} />
           </>

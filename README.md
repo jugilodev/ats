@@ -1,5 +1,43 @@
 # ATS
 
+## Estructura de la prueba 16PF
+
+Las preguntas se guardan en `preguntas16pf`, con el texto de la pregunta y tres opciones obligatorias (`opcion_a`, `opcion_b`, `opcion_c`). `orden` determina el orden de presentación y `activa` permite retirar una pregunta sin borrar su historial.
+
+`pruebas16pf_intentos` relaciona un aspirante con su intento; la restricción única en `aspirante_id` garantiza un solo intento por aspirante. `pruebas16pf_respuestas` relaciona cada intento con cada pregunta y guarda la letra elegida (`A`, `B` o `C`). Una restricción única evita duplicar la respuesta a la misma pregunta dentro de un intento.
+
+Para crear estas tablas en la base `ats`, ejecuta `backend/database/migrations/002_prueba_16pf.sql`. La migración no inserta preguntas ni inventa contenido de la evaluación.
+
+Ejemplo para consultar el cuestionario y la respuesta registrada para un aspirante (reemplaza `123` por su `aspirante_id`):
+
+```sql
+SELECT
+  a.id AS aspirante_id,
+  a.nombre,
+  a.apellido,
+  i.estado AS estado_prueba,
+  p.id AS pregunta_id,
+  p.orden,
+  p.pregunta,
+  p.opcion_a,
+  p.opcion_b,
+  p.opcion_c,
+  r.opcion_elegida,
+  CASE r.opcion_elegida
+    WHEN 'A' THEN p.opcion_a
+    WHEN 'B' THEN p.opcion_b
+    WHEN 'C' THEN p.opcion_c
+  END AS respuesta
+FROM pruebas16pf_intentos i
+JOIN aspirantes a ON a.id = i.aspirante_id
+CROSS JOIN preguntas16pf p
+LEFT JOIN pruebas16pf_respuestas r
+  ON r.intento_id = i.id
+ AND r.pregunta_id = p.id
+WHERE a.id = 123
+ORDER BY p.orden;
+```
+
 ## Autorización de tratamiento de datos
 
 La acción **Enviar autorización** en la tabla de aspirantes envía un correo con un enlace personal, válido durante 24 horas. El enlace abre el documento completo. Para firmar, el aspirante debe aceptar la casilla, escribir la cédula registrada y firmar en el recuadro desde el celular o computador. Si se reenvía una autorización pendiente, el enlace anterior se invalida. Después de firmar, no se habilita un nuevo envío.
@@ -24,3 +62,11 @@ Resend permite enviar por SMTP con Nodemailer usando esos valores. La cuenta deb
 El hosting del frontend debe dirigir las rutas `/autorizacion/*` a la aplicación React (fallback a `index.html`) para que el enlace funcione al abrirse directamente.
 
 El borrador de autorización está en `backend/src/services/consentService.js`. Debe completarse con el nombre y contacto del responsable y ser revisado por la organización antes de utilizarlo oficialmente. La firma dibujada se guarda como evidencia de aceptación en este ATS; no es una firma digital certificada.
+
+## Portal de prueba 16PF
+
+En la tabla de aspirantes, **Enviar prueba 16PF** envía una invitación personal válida por 24 horas. El correo contiene un enlace, y el aspirante ingresa con su cédula como usuario y contraseña. El enlace se puede reenviar para renovar la vigencia; se conserva el único intento y las respuestas ya guardadas. Una prueba completada no se puede volver a invitar.
+
+El portal permite guardar cada respuesta al seleccionarla, regresar a preguntas anteriores y reanudar desde la primera pregunta pendiente. La finalización exige responder todas las preguntas. Al comenzar se congela una copia ordenada de las preguntas y opciones activas para evitar que cambios posteriores alteren el intento.
+
+Aplica `backend/database/migrations/003_prueba_16pf_portal.sql` después de `002_prueba_16pf.sql`. La configuración de correo y `PUBLIC_APP_URL` usa las mismas variables SMTP documentadas arriba. En producción, publica el frontend por HTTPS y configura el hosting para enviar `/prueba-16pf/*` a la aplicación React (fallback a `index.html`). El portal protege la sesión con una cookie `httpOnly` y limita los intentos fallidos de inicio de sesión por IP.

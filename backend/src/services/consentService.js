@@ -1,6 +1,6 @@
 import { createHash, randomBytes } from "node:crypto";
-import nodemailer from "nodemailer";
 import AppError from "../errors/AppError.js";
+import { assertMailConfiguration, sendEmail } from "./mailer.js";
 import {
   acceptConsent,
   expirePendingConsent,
@@ -53,39 +53,6 @@ const escapeHtml = (value) =>
     "'": "&#39;",
   })[character]);
 
-const getMailTransport = () => {
-  const { SMTP_HOST, SMTP_USER, SMTP_PASSWORD, SMTP_FROM } = process.env;
-  const port = Number(process.env.SMTP_PORT || 587);
-
-  if (
-    !SMTP_HOST?.trim() ||
-    !SMTP_USER?.trim() ||
-    !SMTP_PASSWORD ||
-    !SMTP_FROM?.trim() ||
-    !Number.isInteger(port) ||
-    port < 1 ||
-    port > 65_535
-  ) {
-    throw new AppError(
-      "Falta configurar SMTP_HOST, SMTP_USER, SMTP_PASSWORD, SMTP_FROM y un SMTP_PORT válido en el backend",
-      503,
-    );
-  }
-
-  return {
-    from: SMTP_FROM,
-    transport: nodemailer.createTransport({
-      host: SMTP_HOST,
-      port,
-      secure: process.env.SMTP_SECURE === "true",
-      auth: { user: SMTP_USER, pass: SMTP_PASSWORD },
-      connectionTimeout: 10_000,
-      greetingTimeout: 10_000,
-      socketTimeout: 20_000,
-    }),
-  };
-};
-
 const buildEmail = ({ applicant, url, expiresAt }) => {
   const name = `${applicant.nombre} ${applicant.apellido}`;
   const expiry = expiresAt.toLocaleString("es-CO", {
@@ -137,7 +104,7 @@ export const sendTreatmentAuthorization = async (id) => {
   if (process.env.NODE_ENV === "production" && baseUrl.protocol !== "https:") {
     throw new AppError("PUBLIC_APP_URL debe utilizar HTTPS en producción", 503);
   }
-  const { transport, from } = getMailTransport();
+  assertMailConfiguration();
 
   const prepared = await prepareConsent({
     applicantId: Number(id),
@@ -158,8 +125,7 @@ export const sendTreatmentAuthorization = async (id) => {
   ).toString();
 
   try {
-    await transport.sendMail({
-      from,
+    await sendEmail({
       to: prepared.applicant.correo,
       ...buildEmail({ applicant: prepared.applicant, url, expiresAt }),
     });
