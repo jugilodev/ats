@@ -316,6 +316,9 @@ CREATE TABLE IF NOT EXISTS postulaciones (
   vacante_id BIGINT NOT NULL
     REFERENCES vacantes (id) ON DELETE RESTRICT,
   estado VARCHAR(30) NOT NULL DEFAULT 'nueva',
+  descripcion TEXT,
+  paso BOOLEAN,
+  cv_ruta TEXT,
   creado_por_usuario_id BIGINT NOT NULL
     REFERENCES usuarios (id) ON DELETE RESTRICT,
   creado_en TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -326,6 +329,12 @@ CREATE TABLE IF NOT EXISTS postulaciones (
 
 CREATE INDEX IF NOT EXISTS postulaciones_vacante_estado_idx
   ON postulaciones (vacante_id, estado);
+
+COMMENT ON COLUMN postulaciones.paso IS
+  'TRUE: clasificado; FALSE: no clasificado; NULL: todavía sin clasificación.';
+
+COMMENT ON COLUMN postulaciones.cv_ruta IS
+  'Ruta del CV de esta postulación bajo el prefijo de almacenamiento configurado para n8n.';
 
 CREATE TABLE IF NOT EXISTS agenda_plantilla_horarios (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,

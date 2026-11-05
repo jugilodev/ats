@@ -1,0 +1,190 @@
+{
+  "name": "validador_intencion",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1312,
+        -144
+      ],
+      "id": "ec7d962f-57a6-4122-a3dc-7d67548a7827",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst items = $input.all();\n\n// Expresiones afirmativas\nconst afirmativas = [\n  \"si\", \"sí\", \"claro\", \"claro que si\", \"claro que sí\",\n  \"por supuesto\", \"desde luego\", \"correcto\", \"exacto\",\n  \"afirmativo\", \"asi es\", \"así es\", \"efectivamente\",\n  \"de acuerdo\", \"estoy de acuerdo\", \"ok\", \"okay\", \"okey\",\n  \"vale\", \"bueno\", \"listo\", \"dale\", \"de una\",\n  \"hagale\", \"hágale\", \"confirmo\", \"confirmado\",\n  \"acepto\", \"estoy de acuerdo\", \"me parece bien\",\n  \"esta bien\", \"está bien\", \"perfecto\", \"excelente\",\n  \"si señor\", \"sí señor\", \"si señora\", \"sí señora\",\n  \"por mi esta bien\", \"por mí está bien\",\n  \"cuenta conmigo\", \"sin problema\", \"no hay problema\",\n  \"con gusto\", \"obvio\", \"obviamente\", \"seguro\",\n  \"seguro que si\", \"seguro que sí\", \"así será\",\n  \"de acuerdo contigo\", \"estoy listo\", \"estoy lista\",\n  \"si quiero\", \"sí quiero\", \"quiero\", \"si deseo\",\n  \"sí deseo\", \"deseo\", \"me interesa\", \"estoy interesado\",\n  \"estoy interesada\", \"me apunto\", \"vamos\", \"hagámoslo\",\n  \"adelante\", \"proceda\", \"proceder\", \"autorizo\",\n  \"doy mi consentimiento\", \"si acepto\", \"sí acepto\",\n  \"si confirmo\", \"sí confirmo\", \"correcto gracias\"\n];\n\n// Expresiones negativas\nconst negativas = [\n  \"no\", \"no gracias\", \"no quiero\", \"no deseo\",\n  \"no acepto\", \"no estoy de acuerdo\", \"negativo\",\n  \"para nada\", \"de ninguna manera\", \"en absoluto\",\n  \"no me interesa\", \"no me sirve\", \"no puedo\",\n  \"no deseo participar\", \"no deseo continuar\",\n  \"no estoy interesado\", \"no estoy interesada\",\n  \"no por ahora\", \"ahora no\", \"por ahora no\",\n  \"me niego\", \"rechazo\", \"no autorizo\",\n  \"no doy mi consentimiento\", \"no confirmo\",\n  \"no asistiré\", \"no voy\", \"no puedo asistir\",\n  \"no quiero participar\", \"no quiero hacerlo\",\n  \"prefiero que no\", \"mejor no\", \"para otro momento\",\n  \"en otra ocasión\", \"no estoy disponible\",\n  \"no me queda bien\", \"no me parece\",\n  \"no estoy seguro\", \"no estoy segura\",\n  \"no lo creo\", \"de ninguna forma\",\n  \"ni hablar\", \"jamás\", \"nunca\", \"no deseo hacerlo\",\n  \"no estoy de acuerdo contigo\", \"no me interesa gracias\"\n];\n\n// Obtener el mensaje desde la estructura habitual de Evolution API\nreturn items.map(item => {\n  const data = item.json;\n\n  const mensaje = String(\n    data.body?.data?.message?.conversation ??\n    data.body?.data?.message?.extendedTextMessage?.text ??\n    data.data?.message?.conversation ??\n    data.data?.message?.extendedTextMessage?.text ??\n    data.mensaje ??\n    data.text ??\n    \"\"\n  ).trim();\n\n  const normalizar = texto => texto\n    .toLowerCase()\n    .normalize(\"NFD\")\n    .replace(/[\\u0300-\\u036f]/g, \"\")\n    .replace(/[¿?¡!.,;:]/g, \" \")\n    .replace(/\\s+/g, \" \")\n    .trim();\n\n  const texto = normalizar(mensaje);\n\n  const afirmativasNorm = afirmativas.map(normalizar);\n  const negativasNorm = negativas.map(normalizar);\n\n  let intencion = \"desconocida\";\n\n  // Coincidencia exacta para evitar clasificar frases ambiguas\n  if (negativasNorm.includes(texto)) {\n    intencion = \"negativa\";\n  } else if (afirmativasNorm.includes(texto)) {\n    intencion = \"afirmativa\";\n  }\n\n  return {\n    json: {\n      ...data,\n      mensaje_original: mensaje,\n      mensaje_normalizado: texto,\n      intencion,\n      requiere_ia: intencion === \"desconocida\"\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1136,
+        -144
+      ],
+      "id": "fe98ee1d-28b6-4170-afe3-ebe633cd8044",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "4a9921c5-ea60-4cb1-9593-3c0bbb39a508",
+              "leftValue": "={{ $json.intencion }}",
+              "rightValue": "afirmativa",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -656,
+        -112
+      ],
+      "id": "3a708b8d-2928-44cd-9a6f-50d59f4aa29d",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "jsCode": "return{\n  json: {\n    res: true\n  }\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -448,
+        -208
+      ],
+      "id": "9883ba81-1440-4384-ab24-cacfbcf4b25f",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "jsCode": "return{\n  json: {\n    res: false\n  }\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -464,
+        0
+      ],
+      "id": "82606629-2837-4f07-81e6-c72b36fa5d55",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "64c309c8-2ae4-4153-bdf9-244d8f9ac10f",
+              "leftValue": "={{ $json.requiere_ia }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -960,
+        -144
+      ],
+      "id": "f7cb47ed-cd49-45b6-9435-2b2fda6e0fcd",
+      "name": "If1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "6aab10e8-8517-4b3f-8b58-d243bd59f284",
+  "meta": {
+    "instanceId": "cbd38a5cdc734e038bcf6569e6ca8fb90d806bc793358aca03c0d3c1a8f08c8e"
+  },
+  "id": "lLOvDZeq7u8qGSp4",
+  "tags": []
+}

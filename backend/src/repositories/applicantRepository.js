@@ -14,7 +14,8 @@ const applicantFields = `
 export const findApplicants = async ({ limit, offset }) => {
   const [applicantsResult, countResult] = await Promise.all([
     pool.query(
-      `SELECT a.id, a.nombre, a.apellido, a.numero_cedula,
+      `SELECT a.id, a.nombre, COALESCE(to_jsonb(a)->>'apellido', '') AS apellido,
+              a.numero_cedula,
               a.numero_celular, a.correo, a.creado_en, a.actualizado_en,
               autorizacion.estado AS autorizacion_estado,
               autorizacion.enviada_en AS autorizacion_enviada_en,
@@ -27,13 +28,30 @@ export const findApplicants = async ({ limit, offset }) => {
                WHERE ip.intento_id = prueba.id) AS prueba16pf_total,
               (SELECT COUNT(*)::int
                FROM pruebas16pf_respuestas r
-               WHERE r.intento_id = prueba.id) AS prueba16pf_respondidas
+               WHERE r.intento_id = prueba.id) AS prueba16pf_respondidas,
+              COALESCE((
+                SELECT json_agg(
+                  json_build_object(
+                    'postulacion_id', p.id,
+                    'vacante_id', p.vacante_id,
+                    'vacante_nombre', v.nombre,
+                    'paso', p.paso,
+                    'descripcion', p.descripcion,
+                    'estado', p.estado,
+                    'tiene_cv', NULLIF(BTRIM(p.cv_ruta), '') IS NOT NULL
+                  )
+                  ORDER BY p.creado_en DESC, p.id DESC
+                )
+                FROM postulaciones p
+                JOIN vacantes v ON v.id = p.vacante_id
+                WHERE p.aspirante_id = a.id
+              ), '[]'::json) AS postulaciones
        FROM aspirantes a
        LEFT JOIN aspirante_autorizaciones_datos autorizacion
          ON autorizacion.aspirante_id = a.id
        LEFT JOIN pruebas16pf_intentos prueba
          ON prueba.aspirante_id = a.id
-       ORDER BY a.apellido, a.nombre, a.id
+       ORDER BY COALESCE(to_jsonb(a)->>'apellido', ''), a.nombre, a.id
        LIMIT $1 OFFSET $2`,
       [limit, offset],
     ),

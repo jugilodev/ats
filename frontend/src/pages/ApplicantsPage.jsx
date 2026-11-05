@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { apiRequest } from "../api.js";
+import { apiRequest, apiUrl } from "../api.js";
 import Field from "../components/Field.jsx";
 import FormMessage from "../components/FormMessage.jsx";
 
@@ -26,6 +26,7 @@ function ApplicantsTable({
   onSendAuthorization,
   onSendExam,
   onGenerateReport,
+  onViewPostulation,
   deletingId,
   sendingId,
   sendingExamId,
@@ -47,6 +48,7 @@ function ApplicantsTable({
             <th>Correo electrónico</th>
             <th>Tratamiento de datos</th>
             <th>Prueba 16PF</th>
+            <th>Clasificación por vacante</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -81,6 +83,64 @@ function ApplicantsTable({
                       : applicant.prueba16pf_estado
                         ? "Enlace vencido"
                         : "Sin enviar"}
+              </td>
+              <td data-label="Clasificación por vacante">
+                {applicant.postulaciones?.length ? (
+                  <div className="applicant-classifications">
+                    {applicant.postulaciones.map((postulation) => {
+                        const classification =
+                          postulation.paso === true
+                            ? "passed"
+                            : postulation.paso === false
+                              ? "failed"
+                              : "pending";
+                        const label =
+                          classification === "passed"
+                            ? "Clasificado"
+                            : classification === "failed"
+                              ? "No clasificado"
+                              : "Pendiente";
+
+                        return (
+                          <div
+                            className="applicant-classification"
+                            key={postulation.postulacion_id}
+                          >
+                            <span
+                              aria-label={label}
+                              className={`classification-indicator ${classification}`}
+                              role="img"
+                            >
+                              {classification === "passed"
+                                ? "✓"
+                                : classification === "failed"
+                                  ? "×"
+                                  : "·"}
+                            </span>
+                            <span className="classification-vacancy">
+                              {postulation.vacante_nombre}
+                            </span>
+                            <span className={`classification-label ${classification}`}>
+                              {label}
+                            </span>
+                            <button
+                              className="text-button"
+                              onClick={() =>
+                                onViewPostulation(applicant, postulation)
+                              }
+                              type="button"
+                            >
+                              Ver detalle
+                            </button>
+                          </div>
+                        );
+                    })}
+                  </div>
+                ) : (
+                  <span className="muted applicant-no-postulation">
+                    Sin postulaciones
+                  </span>
+                )}
               </td>
               <td data-label="Acciones">
                 <div className="applicant-actions">
@@ -148,6 +208,78 @@ function ApplicantsTable({
         </tbody>
       </table>
     </div>
+  );
+}
+
+function PostulationDetailPanel({ detail, onClose }) {
+  if (!detail) return null;
+
+  const { applicant, postulation } = detail;
+  const status =
+    postulation.paso === true
+      ? "Clasificado"
+      : postulation.paso === false
+        ? "No clasificado"
+        : "Pendiente de clasificación";
+  const classification =
+    postulation.paso === true
+      ? "passed"
+      : postulation.paso === false
+        ? "failed"
+        : "pending";
+  const cvUrl = `${apiUrl}/aspirantes/${encodeURIComponent(applicant.id)}/postulaciones/${encodeURIComponent(postulation.postulacion_id)}/cv`;
+
+  return (
+    <section
+      aria-labelledby="postulation-detail-title"
+      className="applicant-postulation-detail"
+    >
+      <div className="postulation-detail-heading">
+        <div>
+          <p className="eyebrow">DETALLE DE POSTULACIÓN</p>
+          <h3 id="postulation-detail-title">
+            {postulation.vacante_nombre}
+          </h3>
+          <p className="muted">
+            {applicant.nombre} {applicant.apellido}
+          </p>
+        </div>
+        <button className="secondary" onClick={onClose} type="button">
+          Cerrar
+        </button>
+      </div>
+      <dl className="postulation-detail-fields">
+        <div>
+          <dt>Clasificación</dt>
+          <dd>
+            <span className={`classification-label ${classification}`}>
+              {status}
+            </span>
+          </dd>
+        </div>
+        <div>
+          <dt>Estado</dt>
+          <dd>{postulation.estado || "Sin estado"}</dd>
+        </div>
+      </dl>
+      <div className="postulation-description">
+        <h4>Descripción / motivo</h4>
+        <p>
+          {postulation.descripcion?.trim() ||
+            "No se ha registrado una descripción para esta postulación."}
+        </p>
+      </div>
+      <div className="postulation-cv-action">
+        <h4>Hoja de vida</h4>
+        {postulation.tiene_cv ? (
+          <a className="primary" href={cvUrl} rel="noreferrer" target="_blank">
+            Ver hoja de vida (PDF)
+          </a>
+        ) : (
+          <p className="muted">No hay una hoja de vida registrada para esta postulación.</p>
+        )}
+      </div>
+    </section>
   );
 }
 
@@ -260,7 +392,7 @@ export default function ApplicantsPage() {
   const [applicants, setApplicants] = useState([]);
   const [pagination, setPagination] = useState({
     pagina: 1,
-    por_pagina: 15,
+    por_pagina: 10,
     total: 0,
     paginas: 0,
   });
@@ -277,6 +409,7 @@ export default function ApplicantsPage() {
   const [selectedPostulationId, setSelectedPostulationId] = useState("");
   const [loadingReportPostulationsId, setLoadingReportPostulationsId] = useState(null);
   const [generatingReportId, setGeneratingReportId] = useState(null);
+  const [postulationDetail, setPostulationDetail] = useState(null);
 
   const loadApplicants = async (requestedPage = page) => {
     setLoading(true);
@@ -331,6 +464,7 @@ export default function ApplicantsPage() {
       );
       resetForm();
       setMessage(editingId ? "Aspirante actualizado." : "Aspirante agregado.");
+      setPostulationDetail(null);
       await loadApplicants(editingId ? page : 1);
     } catch (requestError) {
       setError(requestError.message);
@@ -340,6 +474,7 @@ export default function ApplicantsPage() {
   };
 
   const editApplicant = (applicant) => {
+    setPostulationDetail(null);
     setEditingId(applicant.id);
     setFormOpen(true);
     setForm({
@@ -361,6 +496,7 @@ export default function ApplicantsPage() {
 
     setError("");
     setMessage("");
+    setPostulationDetail(null);
     setDeletingId(applicant.id);
     try {
       await apiRequest(`/aspirantes/${applicant.id}`, { method: "DELETE" });
@@ -426,6 +562,7 @@ export default function ApplicantsPage() {
 
   const openReportPanel = async (applicant) => {
     if (loadingReportPostulationsId || generatingReportId) return;
+    setPostulationDetail(null);
     setError("");
     setMessage("");
     setReportApplicant(applicant);
@@ -562,6 +699,10 @@ export default function ApplicantsPage() {
           selectedPostulationId={selectedPostulationId}
           sending={generatingReportId === reportApplicant?.id}
         />
+        <PostulationDetailPanel
+          detail={postulationDetail}
+          onClose={() => setPostulationDetail(null)}
+        />
         {loading ? (
           <p className="empty">Cargando aspirantes...</p>
         ) : (
@@ -574,6 +715,9 @@ export default function ApplicantsPage() {
               onSendAuthorization={sendAuthorization}
               onSendExam={sendExam}
               onGenerateReport={openReportPanel}
+              onViewPostulation={(applicant, postulation) =>
+                setPostulationDetail({ applicant, postulation })
+              }
               sendingId={sendingId}
               sendingExamId={sendingExamId}
               reportBusy={Boolean(

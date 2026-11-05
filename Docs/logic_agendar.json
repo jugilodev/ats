@@ -1,0 +1,1876 @@
+{
+  "name": "logic_agendar",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1024,
+        480
+      ],
+      "id": "08e829dd-dba9-444e-8e17-bb07eeccb668",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "Va7wZov2Vf50GJzv",
+          "mode": "list",
+          "cachedResultName": "agenda_control",
+          "cachedResultUrl": "/projects/D8adguWe8HbrjImk/datatables/Va7wZov2Vf50GJzv"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "celular",
+              "keyValue": "={{ $json.celular }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -800,
+        480
+      ],
+      "id": "30d0ac07-6c2c-40f0-83d6-a870acc3a915",
+      "name": "Get row(s)",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.isEmpty() }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    },
+                    "id": "0a5616ca-3b22-494c-a80d-0aefa8c0cc27"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "seleccion_fecha"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "0a304a7f-9b26-4f0a-be9d-345a7173e031",
+                    "leftValue": "={{ $json.estado }}",
+                    "rightValue": "seleccion_indice",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "seleccion_indice"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "95af83e8-0a10-4c82-8a2d-7b632b73ad2f",
+                    "leftValue": "={{ $json.estado }}",
+                    "rightValue": "pendiente_confirmacion_fecha",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "pendiente_confirmacion_fecha"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "2a370dcf-88fc-4e88-9379-e89032fd99a3",
+                    "leftValue": "={{ $json.estado }}",
+                    "rightValue": "seleccion_hora",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "seleccion_hora"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "33fbf30e-45c6-48df-aab5-d43c1dd5b014",
+                    "leftValue": "={{ $json.estado }}",
+                    "rightValue": "pendiente_confirmacion_hora",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "pendiente_confirmacion_hora"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -576,
+        432
+      ],
+      "id": "e35057ae-5298-403f-ac8b-a390fdca22fa",
+      "name": "Switch",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "agenda_fechas_generadas",
+          "mode": "list",
+          "cachedResultName": "agenda_fechas_generadas"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -352,
+        -384
+      ],
+      "id": "7390096b-fa4d-49bb-963b-afb9fbccacb2",
+      "name": "Select rows from a table",
+      "credentials": {
+        "postgres": {
+          "id": "UnJ0BXflKRFKQ0Uj",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst items = $input.all();\n\nreturn items.map((item, index) => ({\n  json: {\n    indice: index + 1,\n    fecha: item.json.fecha\n  }\n}));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -128,
+        -288
+      ],
+      "id": "fc21dfff-bb79-4872-8ff2-de411cd55602",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "Va7wZov2Vf50GJzv",
+          "mode": "list",
+          "cachedResultName": "agenda_control",
+          "cachedResultUrl": "/projects/D8adguWe8HbrjImk/datatables/Va7wZov2Vf50GJzv"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "celular": "={{ $('When Executed by Another Workflow').item.json.celular }}",
+            "indice_horario": "={{ $json.indice }}",
+            "fecha": "={{ $json.fecha.split('T')[0] }}",
+            "seleccionado": false,
+            "estado": "seleccion_indice"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "celular",
+              "displayName": "celular",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "estado",
+              "displayName": "estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "indice_horario",
+              "displayName": "indice_horario",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "hora",
+              "displayName": "hora",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "seleccionado",
+              "displayName": "seleccionado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        96,
+        -288
+      ],
+      "id": "3f2c937c-87c7-4d84-b1ed-f2914c2a8ba4",
+      "name": "Insert row"
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst items = $input.all();\n\nconst datosUsuario = $(\"When Executed by Another Workflow\").first().json;\n\nconst fechas = items.map(item => item.json.fecha);\n\nconst formato = new Intl.DateTimeFormat(\"es-CO\", {\n  timeZone: \"America/Bogota\",\n  weekday: \"long\",\n  day: \"numeric\",\n  month: \"long\",\n  year: \"numeric\",\n  hour: \"numeric\",\n  minute: \"2-digit\",\n  hour12: true\n});\n\nconst opciones = fechas.map((fecha, index) => {\n  const fechaFormateada = formato.format(new Date(fecha));\n  return `${index + 1}. ${fechaFormateada}`;\n});\n\nconst mensaje =\n  \"¡Tenemos estos horarios disponibles para tu cita!\\n\\n\" +\n  opciones.join(\"\\n\") +\n  \"\\n\\nPor favor, responde con el número de la opción que prefieres (\" +\n  opciones.map((_, index) => index + 1).join(\", \") +\n  \").\";\n\nreturn [\n  {\n    json: {\n      mensaje,\n      celular: datosUsuario.celular,\n      mensaje_original: datosUsuario.mensaje,\n      id_vacante: datosUsuario.id_vacante,\n      bot: datosUsuario.bot,\n      opciones: fechas.map((fecha, index) => ({\n        indice: index + 1,\n        fecha\n      }))\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -128,
+        -480
+      ],
+      "id": "ad6314d2-f98f-4b3f-ba83-2d15938ec5a8",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "={{ $json.bot }}",
+        "remoteJid": "={{ $json.celular }}",
+        "messageText": "={{ $json.mensaje }}",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        96,
+        -480
+      ],
+      "id": "da06865a-f715-4671-969e-7dab6e4c2554",
+      "name": "Enviar texto",
+      "credentials": {
+        "evolutionApi": {
+          "id": "zdO8ryhUxv62GUmU",
+          "name": "Evolution account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "Va7wZov2Vf50GJzv",
+          "mode": "list",
+          "cachedResultName": "agenda_control",
+          "cachedResultUrl": "/projects/D8adguWe8HbrjImk/datatables/Va7wZov2Vf50GJzv"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "celular",
+              "keyValue": "={{ $json.celular }}"
+            },
+            {
+              "keyName": "indice_horario",
+              "keyValue": "={{ $('When Executed by Another Workflow').item.json.mensaje }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -352,
+        96
+      ],
+      "id": "b64b0d26-4e4c-4f49-9b9d-cf6e1aa9a612",
+      "name": "Get row(s)1",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "f330e161-610c-4043-86a7-0784366aa6bc",
+              "leftValue": "={{ $json.isEmpty() }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -128,
+        96
+      ],
+      "id": "5bf5e193-dd06-4e5d-8c4f-582bf6ddcae8",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "={{ $json.bot }}",
+        "remoteJid": "={{ $json.celular }}",
+        "messageText": "=Error en la selección de la fecha. Revisa nuevamente las opciones\n\n{{ $json.mensaje }}",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        544,
+        -96
+      ],
+      "id": "33089980-3161-4235-aa38-b4cdd0668c7e",
+      "name": "Enviar texto1",
+      "credentials": {
+        "evolutionApi": {
+          "id": "zdO8ryhUxv62GUmU",
+          "name": "Evolution account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "agenda_fechas_generadas",
+          "mode": "list",
+          "cachedResultName": "agenda_fechas_generadas"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        96,
+        -96
+      ],
+      "id": "ae5da3e0-a609-415c-ad83-4697fafa951b",
+      "name": "Select rows from a table1",
+      "credentials": {
+        "postgres": {
+          "id": "UnJ0BXflKRFKQ0Uj",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst items = $input.all();\n\nconst datosUsuario = $(\"When Executed by Another Workflow\").first().json;\n\nconst fechas = items.map(item => item.json.fecha);\n\nconst formato = new Intl.DateTimeFormat(\"es-CO\", {\n  timeZone: \"America/Bogota\",\n  weekday: \"long\",\n  day: \"numeric\",\n  month: \"long\",\n  year: \"numeric\",\n  hour: \"numeric\",\n  minute: \"2-digit\",\n  hour12: true\n});\n\nconst opciones = fechas.map((fecha, index) => {\n  const fechaFormateada = formato.format(new Date(fecha));\n  return `${index + 1}. ${fechaFormateada}`;\n});\n\nconst mensaje =\n  \"¡Tenemos estos horarios disponibles para tu cita!\\n\\n\" +\n  opciones.join(\"\\n\") +\n  \"\\n\\nPor favor, responde con el número de la opción que prefieres (\" +\n  opciones.map((_, index) => index + 1).join(\", \") +\n  \").\";\n\nreturn [\n  {\n    json: {\n      mensaje,\n      celular: datosUsuario.celular,\n      mensaje_original: datosUsuario.mensaje,\n      id_vacante: datosUsuario.id_vacante,\n      bot: datosUsuario.bot,\n      opciones: fechas.map((fecha, index) => ({\n        indice: index + 1,\n        fecha\n      }))\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        320,
+        -96
+      ],
+      "id": "e8241ac1-fe56-4c40-8bff-bccbb7a7805d",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "Va7wZov2Vf50GJzv",
+          "mode": "list",
+          "cachedResultName": "agenda_control",
+          "cachedResultUrl": "/projects/D8adguWe8HbrjImk/datatables/Va7wZov2Vf50GJzv"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "celular",
+              "keyValue": "={{ $json.celular }}"
+            },
+            {
+              "keyName": "indice_horario",
+              "keyValue": "={{ $('When Executed by Another Workflow').item.json.mensaje }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "seleccionado": true
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "celular",
+              "displayName": "celular",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "estado",
+              "displayName": "estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "indice_horario",
+              "displayName": "indice_horario",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "seleccionado",
+              "displayName": "seleccionado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        320,
+        288
+      ],
+      "id": "b5045d79-5b76-4892-884c-9964bd71cf55",
+      "name": "Update row(s)"
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "={{ $('When Executed by Another Workflow').item.json.bot }}",
+        "remoteJid": "={{ $json.celular }}",
+        "messageText": "=Confirmas para el día {{ $json.fecha }} ?\nResponde si o no",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        96,
+        192
+      ],
+      "id": "7538f0e2-e8fb-4b5f-a18e-8cf1e6a3f8aa",
+      "name": "Enviar texto2",
+      "credentials": {
+        "evolutionApi": {
+          "id": "zdO8ryhUxv62GUmU",
+          "name": "Evolution account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "Va7wZov2Vf50GJzv",
+          "mode": "list",
+          "cachedResultName": "agenda_control",
+          "cachedResultUrl": "/projects/D8adguWe8HbrjImk/datatables/Va7wZov2Vf50GJzv"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "celular",
+              "keyValue": "={{ $('When Executed by Another Workflow').item.json.celular }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "estado": "pendiente_confirmacion_fecha"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "celular",
+              "displayName": "celular",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "estado",
+              "displayName": "estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "indice_horario",
+              "displayName": "indice_horario",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "seleccionado",
+              "displayName": "seleccionado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        320,
+        96
+      ],
+      "id": "b9023f5e-e6ea-4369-920f-9e5e591ade0d",
+      "name": "Update row(s)1"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "lLOvDZeq7u8qGSp4",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/lLOvDZeq7u8qGSp4",
+          "cachedResultName": "validador_intencion"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -128,
+        480
+      ],
+      "id": "d225e46c-e30a-4e6a-a4e6-e70b97eb7070",
+      "name": "Call 'validador_intencion'"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3105ad0c-ccc1-411e-b3c2-80beeec4e8bc",
+              "name": "celular",
+              "value": "={{ $('When Executed by Another Workflow').item.json.celular }}",
+              "type": "string"
+            },
+            {
+              "id": "e29f0ad0-6207-4428-9fe9-6bb14d81bd9e",
+              "name": "mensaje",
+              "value": "={{ $('When Executed by Another Workflow').item.json.mensaje }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -352,
+        480
+      ],
+      "id": "1a684ac7-0ba4-44ed-b64a-fb0bd03c9c53",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "929c5534-c611-4658-9441-8c835b542eb5",
+              "leftValue": "={{ $json.res }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        96,
+        480
+      ],
+      "id": "ad9b8974-c321-4964-9017-27acee88613a",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "operation": "deleteRows",
+        "dataTableId": {
+          "__rl": true,
+          "value": "Va7wZov2Vf50GJzv",
+          "mode": "list",
+          "cachedResultName": "agenda_control",
+          "cachedResultUrl": "/projects/D8adguWe8HbrjImk/datatables/Va7wZov2Vf50GJzv"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "celular",
+              "keyValue": "={{ $('When Executed by Another Workflow').item.json.celular }}"
+            },
+            {
+              "keyName": "seleccionado",
+              "condition": "isFalse"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        320,
+        480
+      ],
+      "id": "2f82aafc-8aaa-4e4c-9fcb-b1c58982666c",
+      "name": "Delete row(s)",
+      "executeOnce": false,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "Va7wZov2Vf50GJzv",
+          "mode": "list",
+          "cachedResultName": "agenda_control",
+          "cachedResultUrl": "/projects/D8adguWe8HbrjImk/datatables/Va7wZov2Vf50GJzv"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "celular",
+              "keyValue": "={{ $('When Executed by Another Workflow').item.json.celular }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        544,
+        480
+      ],
+      "id": "935c7336-64c0-48e2-bded-edf2185a8c4f",
+      "name": "Get row(s)2"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from public.agenda_horarios ah\nwhere ah.fecha::date = '{{ $json.fecha }}'",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        768,
+        480
+      ],
+      "id": "38e2a3f8-9c15-4117-b4ac-b20a6c51c6e7",
+      "name": "Execute a SQL query",
+      "credentials": {
+        "postgres": {
+          "id": "UnJ0BXflKRFKQ0Uj",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "ee4e2026-2b99-40f7-acb5-913e444e34f3",
+              "leftValue": "={{ $json.cupos }}",
+              "rightValue": 1,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        992,
+        480
+      ],
+      "id": "e1e04128-1ec9-40a8-91f0-d6619047442d",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst items = $input.all();\n\nconst datosUsuario = $(\"When Executed by Another Workflow\").first().json;\n\n// Obtener los horarios disponibles\nconst horarios = items.map(item => item.json);\n\nconst formatoFecha = new Intl.DateTimeFormat(\"es-CO\", {\n  timeZone: \"America/Bogota\",\n  weekday: \"long\",\n  day: \"numeric\",\n  month: \"long\",\n  year: \"numeric\"\n});\n\n// Convertir hora de 24 horas a formato de 12 horas\nfunction formatearHora(hora) {\n  const [horas, minutos] = hora.split(\":\").map(Number);\n\n  const fecha = new Date();\n  fecha.setHours(horas, minutos, 0, 0);\n\n  return new Intl.DateTimeFormat(\"es-CO\", {\n    hour: \"numeric\",\n    minute: \"2-digit\",\n    hour12: true\n  }).format(fecha);\n}\n\nconst fechaFormateada = horarios.length\n  ? formatoFecha.format(new Date(horarios[0].fecha))\n  : \"\";\n\nconst opciones = horarios.map((horario, index) => {\n  return `${index + 1}. ${formatearHora(horario.hora)}`;\n});\n\nconst mensaje =\n  `¡Tenemos estos horarios disponibles para tu cita el ${fechaFormateada}!\\n\\n` +\n  opciones.join(\"\\n\") +\n  \"\\n\\nPor favor, responde con el número de la opción que prefieres (\" +\n  opciones.map((_, index) => index + 1).join(\", \") +\n  \").\";\n\nreturn [\n  {\n    json: {\n      mensaje,\n      celular: datosUsuario.celular,\n      mensaje_original: datosUsuario.mensaje,\n      id_vacante: datosUsuario.id_vacante,\n      bot: datosUsuario.bot,\n      opciones: horarios.map((horario, index) => ({\n        indice: index + 1,\n        id_horario: horario.id,\n        fecha: horario.fecha,\n        hora: horario.hora,\n        cupos: horario.cupos\n      }))\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1216,
+        384
+      ],
+      "id": "a591b205-1270-4b1d-aa0d-2bf5956e6ac3",
+      "name": "Code in JavaScript3"
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst items = $input.all();\n\nreturn items.map((item, index) => ({\n  json: {\n    indice: index + 1,\n    fecha: item.json.hora\n  }\n}));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1216,
+        576
+      ],
+      "id": "3a178167-f865-4471-ab63-e571db8b449b",
+      "name": "Code in JavaScript4"
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "={{ $json.bot }}",
+        "remoteJid": "={{ $json.celular }}",
+        "messageText": "={{ $json.mensaje }}",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        1440,
+        384
+      ],
+      "id": "35561574-cc2f-4307-b15d-c884ce70fb3b",
+      "name": "Enviar texto3",
+      "credentials": {
+        "evolutionApi": {
+          "id": "zdO8ryhUxv62GUmU",
+          "name": "Evolution account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "Va7wZov2Vf50GJzv",
+          "mode": "list",
+          "cachedResultName": "agenda_control",
+          "cachedResultUrl": "/projects/D8adguWe8HbrjImk/datatables/Va7wZov2Vf50GJzv"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "celular": "={{ $('When Executed by Another Workflow').item.json.celular }}",
+            "indice_horario": "={{ $json.indice }}",
+            "fecha": "={{ $json.fecha.split('T')[0] }}",
+            "seleccionado": false,
+            "estado": "seleccion_hora"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "celular",
+              "displayName": "celular",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "estado",
+              "displayName": "estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "indice_horario",
+              "displayName": "indice_horario",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "seleccionado",
+              "displayName": "seleccionado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1440,
+        576
+      ],
+      "id": "9b40903b-10d9-48bb-9422-ce74b32b75d5",
+      "name": "Insert row1"
+    },
+    {
+      "parameters": {
+        "operation": "deleteRows",
+        "dataTableId": {
+          "__rl": true,
+          "value": "Va7wZov2Vf50GJzv",
+          "mode": "list",
+          "cachedResultName": "agenda_control",
+          "cachedResultUrl": "/projects/D8adguWe8HbrjImk/datatables/Va7wZov2Vf50GJzv"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "celular",
+              "keyValue": "={{ $('When Executed by Another Workflow').item.json.celular }}"
+            },
+            {
+              "keyName": "seleccionado",
+              "condition": "isTrue"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1664,
+        576
+      ],
+      "id": "789d2944-3775-460a-bf41-3f711a312d83",
+      "name": "Delete row(s)1",
+      "executeOnce": false,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "Va7wZov2Vf50GJzv",
+          "mode": "list",
+          "cachedResultName": "agenda_control",
+          "cachedResultUrl": "/projects/D8adguWe8HbrjImk/datatables/Va7wZov2Vf50GJzv"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "celular",
+              "keyValue": "={{ $json.celular }}"
+            },
+            {
+              "keyName": "indice_horario",
+              "keyValue": "={{ $('When Executed by Another Workflow').item.json.mensaje }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -352,
+        768
+      ],
+      "id": "0c1fb095-de86-4a06-91b3-72b086d71b54",
+      "name": "Get row(s)3",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "f330e161-610c-4043-86a7-0784366aa6bc",
+              "leftValue": "={{ $json.isEmpty() }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -128,
+        768
+      ],
+      "id": "78eedaa0-6274-4338-9c6a-cf05a72221d5",
+      "name": "If3"
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "={{ $('When Executed by Another Workflow').item.json.bot }}",
+        "remoteJid": "={{ $json.celular }}",
+        "messageText": "=Confirmas para la hora {{ $json.fecha }} ?\nResponde si o no",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        96,
+        768
+      ],
+      "id": "b0bb52d2-777a-433c-af8f-b25bb89d5b28",
+      "name": "Enviar texto4",
+      "credentials": {
+        "evolutionApi": {
+          "id": "zdO8ryhUxv62GUmU",
+          "name": "Evolution account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "Va7wZov2Vf50GJzv",
+          "mode": "list",
+          "cachedResultName": "agenda_control",
+          "cachedResultUrl": "/projects/D8adguWe8HbrjImk/datatables/Va7wZov2Vf50GJzv"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "celular",
+              "keyValue": "={{ $('When Executed by Another Workflow').item.json.celular }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "estado": "pendiente_confirmacion_hora"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "celular",
+              "displayName": "celular",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "estado",
+              "displayName": "estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "indice_horario",
+              "displayName": "indice_horario",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "seleccionado",
+              "displayName": "seleccionado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        320,
+        672
+      ],
+      "id": "888d4b7f-d510-4917-a30d-7cdd55851bce",
+      "name": "Update row(s)2"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "Va7wZov2Vf50GJzv",
+          "mode": "list",
+          "cachedResultName": "agenda_control",
+          "cachedResultUrl": "/projects/D8adguWe8HbrjImk/datatables/Va7wZov2Vf50GJzv"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "celular",
+              "keyValue": "={{ $('When Executed by Another Workflow').item.json.celular }}"
+            },
+            {
+              "keyName": "indice_horario",
+              "keyValue": "={{ $('When Executed by Another Workflow').item.json.mensaje }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "seleccionado": true
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "celular",
+              "displayName": "celular",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "estado",
+              "displayName": "estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "indice_horario",
+              "displayName": "indice_horario",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "seleccionado",
+              "displayName": "seleccionado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        320,
+        864
+      ],
+      "id": "81b60b60-b2db-40ca-9a1d-b1e4b44f812a",
+      "name": "Update row(s)3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3105ad0c-ccc1-411e-b3c2-80beeec4e8bc",
+              "name": "celular",
+              "value": "={{ $('When Executed by Another Workflow').item.json.celular }}",
+              "type": "string"
+            },
+            {
+              "id": "e29f0ad0-6207-4428-9fe9-6bb14d81bd9e",
+              "name": "mensaje",
+              "value": "={{ $('When Executed by Another Workflow').item.json.mensaje }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -352,
+        1056
+      ],
+      "id": "905b48a4-9d60-4f1c-a76d-7699e5b1b188",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "lLOvDZeq7u8qGSp4",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/lLOvDZeq7u8qGSp4",
+          "cachedResultName": "validador_intencion"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -128,
+        1056
+      ],
+      "id": "eedb71e4-524d-490d-853c-ec07715774d8",
+      "name": "Call 'validador_intencion'1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "929c5534-c611-4658-9441-8c835b542eb5",
+              "leftValue": "={{ $json.res }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        96,
+        1056
+      ],
+      "id": "a1a1c0db-f5f0-4c16-bd48-51ed79b645d4",
+      "name": "If4"
+    },
+    {
+      "parameters": {
+        "operation": "deleteRows",
+        "dataTableId": {
+          "__rl": true,
+          "value": "Va7wZov2Vf50GJzv",
+          "mode": "list",
+          "cachedResultName": "agenda_control",
+          "cachedResultUrl": "/projects/D8adguWe8HbrjImk/datatables/Va7wZov2Vf50GJzv"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "celular",
+              "keyValue": "={{ $('When Executed by Another Workflow').item.json.celular }}"
+            },
+            {
+              "keyName": "seleccionado",
+              "condition": "isFalse"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        320,
+        1040
+      ],
+      "id": "608bad55-74b9-4d8b-8482-2192b43bff79",
+      "name": "Delete row(s)2",
+      "executeOnce": false,
+      "alwaysOutputData": true
+    }
+  ],
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "celular": "573128132757",
+          "mensaje": "si",
+          "id_vacante": 14,
+          "bot": "Bot"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Get row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s)": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Select rows from a table",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get row(s)1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get row(s)3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Select rows from a table": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Insert row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Enviar texto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s)1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Select rows from a table1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Enviar texto2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Select rows from a table1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "Enviar texto1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar texto2": {
+      "main": [
+        [
+          {
+            "node": "Update row(s)1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Call 'validador_intencion'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'validador_intencion'": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Delete row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete row(s)": {
+      "main": [
+        [
+          {
+            "node": "Get row(s)2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s)2": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a SQL query": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript3",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code in JavaScript4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript3": {
+      "main": [
+        [
+          {
+            "node": "Enviar texto3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript4": {
+      "main": [
+        [
+          {
+            "node": "Insert row1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert row1": {
+      "main": [
+        [
+          {
+            "node": "Delete row(s)1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s)3": {
+      "main": [
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If3": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Enviar texto4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar texto4": {
+      "main": [
+        [
+          {
+            "node": "Update row(s)2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update row(s)3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Call 'validador_intencion'1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'validador_intencion'1": {
+      "main": [
+        [
+          {
+            "node": "If4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If4": {
+      "main": [
+        [
+          {
+            "node": "Delete row(s)2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "bb9c1595-1163-4936-b150-ab0e5c62a88f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "cbd38a5cdc734e038bcf6569e6ca8fb90d806bc793358aca03c0d3c1a8f08c8e"
+  },
+  "id": "QodL1udWgIlPikt9",
+  "tags": []
+}

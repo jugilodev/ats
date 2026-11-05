@@ -1,0 +1,1156 @@
+{
+  "name": "logic_whatsapp",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "whatsapp",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -704,
+        -176
+      ],
+      "id": "f16f5237-2d98-4d4a-8c5a-eff01d55c460",
+      "name": "Webhook",
+      "webhookId": "96353067-f3e9-40a3-a7ee-3970f873499d"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "882bef0c-b8a1-48a3-acc4-3d8b818dfa26",
+              "name": "celular",
+              "value": "={{ $json.body.data.key.remoteJid.split('@')[0] }}",
+              "type": "string"
+            },
+            {
+              "id": "5b924fdf-044d-4caf-937b-302ee1c4109b",
+              "name": "mensaje",
+              "value": "={{ $json.body.data.message.conversation }}",
+              "type": "string"
+            },
+            {
+              "id": "56956260-ef13-49ff-9e36-262ec046d287",
+              "name": "bot",
+              "value": "={{ $json.body.instance }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -480,
+        -176
+      ],
+      "id": "08457b0c-651e-431d-a634-bf7493f78264",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "Ct4FUH9mWoLewM0o",
+          "mode": "list",
+          "cachedResultName": "control_contacto_ats",
+          "cachedResultUrl": "/projects/D8adguWe8HbrjImk/datatables/Ct4FUH9mWoLewM0o"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "celular",
+              "keyValue": "={{ $json.celular }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -256,
+        -176
+      ],
+      "id": "07dc582f-ce62-45ec-8178-555e4f3c8f44",
+      "name": "Get row(s)"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.estado }}",
+                    "rightValue": "mensaje_inicial",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "23350389-a3ab-4575-9ca0-b5d0547b61d5"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "mensaje_inicial"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "9bd01a60-9ee7-4181-abcd-87888550fc2a",
+                    "leftValue": "={{ $json.estado }}",
+                    "rightValue": "killer_question",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "killer_question"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "5ffe18f0-7f5e-48f5-93e4-c4f430dc37ba",
+                    "leftValue": "={{ $json.estado }}",
+                    "rightValue": "agendar",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "agendar"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "50a3ada8-17f6-4b87-91e3-17c3d222dc92",
+                    "leftValue": "={{ $json.estado }}",
+                    "rightValue": "descartado",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "descartado"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -32,
+        -208
+      ],
+      "id": "1655308c-6a8b-4458-b9d8-6a0ed289c83e",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "lLOvDZeq7u8qGSp4",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/lLOvDZeq7u8qGSp4",
+          "cachedResultName": "validador_intencion"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        416,
+        -368
+      ],
+      "id": "6c286bf0-a5e5-4278-90de-b6495624b330",
+      "name": "Call 'validador_intencion'"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2251d8c1-186a-44bf-9d47-28d2a90b98a5",
+              "name": "celular",
+              "value": "={{ $('Edit Fields').item.json.celular }}",
+              "type": "string"
+            },
+            {
+              "id": "d976d5be-1704-4db8-8cdc-b9f09c261697",
+              "name": "mensaje",
+              "value": "={{ $('Edit Fields').item.json.mensaje }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        192,
+        -368
+      ],
+      "id": "88e52671-f235-4b5b-8e98-4c06ea25d11f",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "c6f4d10f-0c8f-4d41-867d-18baaa873562",
+              "leftValue": "={{ $json.res }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        640,
+        -368
+      ],
+      "id": "9aa51f6a-c2be-463c-8036-2d752189f0be",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "Ct4FUH9mWoLewM0o",
+          "mode": "list",
+          "cachedResultName": "control_contacto_ats",
+          "cachedResultUrl": "/projects/D8adguWe8HbrjImk/datatables/Ct4FUH9mWoLewM0o"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "celular",
+              "keyValue": "={{ $('Edit Fields1').item.json.celular }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "estado": "killer_question"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "id_aspirante",
+              "displayName": "id_aspirante",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "apellido",
+              "displayName": "apellido",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "celular",
+              "displayName": "celular",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "id_vacante",
+              "displayName": "id_vacante",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "vacante",
+              "displayName": "vacante",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "estado",
+              "displayName": "estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        864,
+        -272
+      ],
+      "id": "ecc1ff36-8cdd-45da-96e2-f634e111fb2e",
+      "name": "Update row(s)1"
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "={{ $('Edit Fields').item.json.bot }}",
+        "remoteJid": "={{ $('Edit Fields1').item.json.celular }}",
+        "messageText": "Te hare una serie de preguntas",
+        "options_message": {
+          "delay": 3000
+        }
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        1712,
+        -368
+      ],
+      "id": "43040408-b42a-4479-9ce7-159209e276c7",
+      "name": "Enviar texto",
+      "executeOnce": true,
+      "credentials": {
+        "evolutionApi": {
+          "id": "zdO8ryhUxv62GUmU",
+          "name": "Evolution account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "killer_questions",
+          "mode": "list",
+          "cachedResultName": "killer_questions"
+        },
+        "where": {
+          "values": [
+            {
+              "column": "vacante_id",
+              "value": "={{ $('Get row(s)').item.json.id_vacante }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        864,
+        -464
+      ],
+      "id": "18710713-a8d8-43b2-b48c-01538cfd90dd",
+      "name": "Select rows from a table",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "UnJ0BXflKRFKQ0Uj",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "Ct4FUH9mWoLewM0o",
+          "mode": "list",
+          "cachedResultName": "control_contacto_ats",
+          "cachedResultUrl": "/projects/D8adguWe8HbrjImk/datatables/Ct4FUH9mWoLewM0o"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "celular",
+              "keyValue": "={{ $('Edit Fields1').item.json.celular }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "estado": "killer_question"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "id_aspirante",
+              "displayName": "id_aspirante",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "apellido",
+              "displayName": "apellido",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "celular",
+              "displayName": "celular",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "id_vacante",
+              "displayName": "id_vacante",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "vacante",
+              "displayName": "vacante",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "estado",
+              "displayName": "estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1312,
+        -368
+      ],
+      "id": "443beaba-63d3-4040-bd77-c844d6aa00fd",
+      "name": "Update row(s)"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "d5027873-32b1-41db-9b39-be767fc4768c",
+              "leftValue": "={{ $json.isEmpty() }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1088,
+        -464
+      ],
+      "id": "590c0743-baa6-494b-a27b-04a1268e7f32",
+      "name": "If1",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "Ct4FUH9mWoLewM0o",
+          "mode": "list",
+          "cachedResultName": "control_contacto_ats",
+          "cachedResultUrl": "/projects/D8adguWe8HbrjImk/datatables/Ct4FUH9mWoLewM0o"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "celular",
+              "keyValue": "={{ $('Edit Fields1').item.json.celular }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "estado": "agendar"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "id_aspirante",
+              "displayName": "id_aspirante",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "apellido",
+              "displayName": "apellido",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "celular",
+              "displayName": "celular",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "id_vacante",
+              "displayName": "id_vacante",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "vacante",
+              "displayName": "vacante",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "estado",
+              "displayName": "estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1312,
+        -560
+      ],
+      "id": "2b7c7402-1a63-46dd-ad9c-848269dc7909",
+      "name": "Update row(s)2"
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "={{ $('Edit Fields').item.json.bot }}",
+        "remoteJid": "={{ $('Edit Fields1').item.json.celular }}",
+        "messageText": "Esta es la agenda para realizar la entrevista",
+        "options_message": {
+          "delay": 3000
+        }
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        1680,
+        -560
+      ],
+      "id": "d5b75149-f0b5-4d85-9148-049cbb0fea10",
+      "name": "Enviar texto1",
+      "credentials": {
+        "evolutionApi": {
+          "id": "zdO8ryhUxv62GUmU",
+          "name": "Evolution account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "89oqdJBIE5jZ0Xir",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/89oqdJBIE5jZ0Xir",
+          "cachedResultName": "logic_killer_question"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        416,
+        -176
+      ],
+      "id": "faad0b27-ab88-4846-8359-594a1e274789",
+      "name": "Call 'logic_killer_question'"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2251d8c1-186a-44bf-9d47-28d2a90b98a5",
+              "name": "celular",
+              "value": "={{ $('Edit Fields').item.json.celular }}",
+              "type": "string"
+            },
+            {
+              "id": "d976d5be-1704-4db8-8cdc-b9f09c261697",
+              "name": "mensaje",
+              "value": "={{ $('Edit Fields').item.json.mensaje }}",
+              "type": "string"
+            },
+            {
+              "id": "8b887159-a640-4ad7-89b6-2b6bb1179e9a",
+              "name": "id_vacante",
+              "value": "={{ $json.id_vacante }}",
+              "type": "number"
+            },
+            {
+              "id": "a3aab853-2cfd-4600-a4d3-2197e2a30a72",
+              "name": "bot",
+              "value": "={{ $('Edit Fields').item.json.bot }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        192,
+        -176
+      ],
+      "id": "c9811e43-e3c3-4361-bfe6-ceb4812b2f4c",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "={{ $('Edit Fields').item.json.bot }}",
+        "remoteJid": "={{ $('Edit Fields').item.json.celular }}",
+        "messageText": "Fuiste descartado",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        224,
+        160
+      ],
+      "id": "57db9865-7c12-409c-99ed-08c17ad0db0a",
+      "name": "Enviar texto2",
+      "credentials": {
+        "evolutionApi": {
+          "id": "zdO8ryhUxv62GUmU",
+          "name": "Evolution account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2251d8c1-186a-44bf-9d47-28d2a90b98a5",
+              "name": "celular",
+              "value": "={{ $('Edit Fields').item.json.celular }}",
+              "type": "string"
+            },
+            {
+              "id": "d976d5be-1704-4db8-8cdc-b9f09c261697",
+              "name": "mensaje",
+              "value": "={{ $('Edit Fields').item.json.mensaje }}",
+              "type": "string"
+            },
+            {
+              "id": "8b887159-a640-4ad7-89b6-2b6bb1179e9a",
+              "name": "id_vacante",
+              "value": "={{ $json.id_vacante }}",
+              "type": "number"
+            },
+            {
+              "id": "a3aab853-2cfd-4600-a4d3-2197e2a30a72",
+              "name": "bot",
+              "value": "={{ $('Edit Fields').item.json.bot }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        -16
+      ],
+      "id": "6ee25007-cbe6-4f08-8a2e-d5639c686919",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "QodL1udWgIlPikt9",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/QodL1udWgIlPikt9",
+          "cachedResultName": "logic_agendar"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        448,
+        0
+      ],
+      "id": "4f2b406f-e3a9-45d7-8aa2-f5cb8bc3ec84",
+      "name": "Call 'logic_agendar'"
+    },
+    {
+      "parameters": {
+        "resource": "chat-api",
+        "operation": "read-messages"
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        1504,
+        -368
+      ],
+      "id": "eed790c7-bf68-4f62-b3a5-9f6e0e7e0b32",
+      "name": "Marcar mensagens como lidas",
+      "credentials": {
+        "evolutionApi": {
+          "id": "zdO8ryhUxv62GUmU",
+          "name": "Evolution account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "chat-api",
+        "operation": "read-messages"
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        1504,
+        -560
+      ],
+      "id": "76908b26-e11c-476d-9420-bc90a29cdd99",
+      "name": "Marcar mensagens como lidas1",
+      "credentials": {
+        "evolutionApi": {
+          "id": "zdO8ryhUxv62GUmU",
+          "name": "Evolution account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Get row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s)": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Enviar texto2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'validador_intencion'": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Call 'validador_intencion'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Select rows from a table",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update row(s)1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Select rows from a table": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row(s)": {
+      "main": [
+        [
+          {
+            "node": "Marcar mensagens como lidas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar texto": {
+      "main": [
+        []
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Update row(s)2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row(s)2": {
+      "main": [
+        [
+          {
+            "node": "Marcar mensagens como lidas1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Call 'logic_killer_question'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'logic_killer_question'": {
+      "main": [
+        []
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "Call 'logic_agendar'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "0cb9296d-0fb9-4c8d-812d-809fd6ebb253",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "cbd38a5cdc734e038bcf6569e6ca8fb90d806bc793358aca03c0d3c1a8f08c8e"
+  },
+  "id": "XvO0ZC6noFffKXGS",
+  "tags": []
+}

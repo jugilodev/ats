@@ -1,0 +1,217 @@
+{
+  "name": "Inicial",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -624,
+        -112
+      ],
+      "id": "f7a1162f-fa89-4c51-b5d5-081209005456",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select\n\ta.id as id_aspirante,\n\ta.nombre,\n\ta.apellido,\n\ta.numero_celular,\n    v.id as id_vacante,\n\tv.nombre as nombre_vacante\nFROM public.postulaciones p \nINNER JOIN public.aspirantes a ON a.id = p.aspirante_id\nINNER JOIN public.vacantes v ON v.id = p.vacante_id \nWHERE p.creado_en::date = '2026-10-14'\nand p.estado = 'SELECCIONADO';\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -400,
+        -112
+      ],
+      "id": "e6640c48-87f1-4a3d-8f61-91c5b3c18d2f",
+      "name": "Execute a SQL query",
+      "credentials": {
+        "postgres": {
+          "id": "UnJ0BXflKRFKQ0Uj",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "Ct4FUH9mWoLewM0o",
+          "mode": "list",
+          "cachedResultName": "control_contacto_ats",
+          "cachedResultUrl": "/projects/D8adguWe8HbrjImk/datatables/Ct4FUH9mWoLewM0o"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id_aspirante": "={{ $json.id_aspirante }}",
+            "nombre": "={{ $json.nombre }}",
+            "apellido": "={{ $json.apellido }}",
+            "celular": "={{ $json.numero_celular }}",
+            "id_vacante": "={{ $json.id_vacante }}",
+            "vacante": "={{ $json.nombre_vacante }}",
+            "estado": "mensaje_inicial"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "id_aspirante",
+              "displayName": "id_aspirante",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "apellido",
+              "displayName": "apellido",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "celular",
+              "displayName": "celular",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "id_vacante",
+              "displayName": "id_vacante",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "vacante",
+              "displayName": "vacante",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "estado",
+              "displayName": "estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -176,
+        -112
+      ],
+      "id": "f746be1f-b4c0-448e-89be-a41c6af9eba9",
+      "name": "Insert row"
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "Bot",
+        "remoteJid": "={{ $json.celular }}",
+        "messageText": "=Hola, fuiste seleccionado a  {{ $json.vacante }}, responde si deseas continuar",
+        "options_message": {
+          "delay": 3000
+        }
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        48,
+        -112
+      ],
+      "id": "031736e6-4960-47d8-9e5a-c44b8101e9ec",
+      "name": "Enviar texto",
+      "credentials": {
+        "evolutionApi": {
+          "id": "zdO8ryhUxv62GUmU",
+          "name": "Evolution account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a SQL query": {
+      "main": [
+        [
+          {
+            "node": "Insert row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert row": {
+      "main": [
+        [
+          {
+            "node": "Enviar texto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "f0579145-0fb6-4970-ace7-f248e6f8d747",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "cbd38a5cdc734e038bcf6569e6ca8fb90d806bc793358aca03c0d3c1a8f08c8e"
+  },
+  "id": "C6m4W0s2aREdbwzu",
+  "tags": []
+}

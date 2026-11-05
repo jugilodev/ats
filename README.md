@@ -2,6 +2,21 @@
 
 ## Estructura de la prueba 16PF
 
+Para visualizar todas las tablas y relaciones, importa `backend/database/schema-diagram.sql` en dbdiagram.io usando la opción de importar SQL. Este archivo contiene una representación simplificada para diagramas; no es un script de instalación ni reemplaza `backend/database/schema.sql` o las migraciones.
+
+La tabla `postulaciones` asocia cada aspirante con una vacante y conserva por separado `descripcion`, `estado` (texto libre) y `paso` (booleano). En `paso`, `TRUE` significa clasificado, `FALSE` no clasificado y `NULL` pendiente de clasificación. Para una base existente, aplica `backend/database/migrations/004_postulacion_clasificacion.sql`.
+
+En la tabla de aspirantes, cada postulación muestra un indicador de clasificación (verde si pasó, rojo si no pasó y gris si está pendiente). La opción **Ver detalle** presenta la descripción/motivo y el estado de esa postulación.
+
+### Hojas de vida por postulación
+
+Cada CV se asocia con la fila correspondiente de `postulaciones` mediante `cv_ruta`; no se guarda en el aspirante global. Para una base existente, aplica `backend/database/migrations/005_postulacion_cv.sql`. Configura en `backend/.env`:
+
+- `CV_ROOT_DIR`: carpeta local que contiene los archivos, por ejemplo `C:\Users\tu-usuario\Pictures\CVs`.
+- `CV_N8N_PATH_PREFIX=/home/node/.n8n-files/CVs/`: prefijo del volumen que n8n escribe en `postulaciones.cv_ruta`.
+
+n8n debe guardar una ruta completa bajo ese prefijo, como `/home/node/.n8n-files/CVs/Vendedor punto de venta/archivo.pdf`, en la postulación específica. El backend sirve el PDF solo tras autenticar la sesión del ATS y verificar que la postulación pertenece al aspirante indicado; no expone la carpeta como contenido estático. El panel de detalle muestra **Ver hoja de vida (PDF)** cuando hay una ruta registrada.
+
 Las preguntas se guardan en `preguntas16pf`, con el texto de la pregunta y tres opciones obligatorias (`opcion_a`, `opcion_b`, `opcion_c`). `orden` determina el orden de presentación y `activa` permite retirar una pregunta sin borrar su historial.
 
 `pruebas16pf_intentos` relaciona un aspirante con su intento; la restricción única en `aspirante_id` garantiza un solo intento por aspirante. `pruebas16pf_respuestas` relaciona cada intento con cada pregunta y guarda la letra elegida (`A`, `B` o `C`). Una restricción única evita duplicar la respuesta a la misma pregunta dentro de un intento.

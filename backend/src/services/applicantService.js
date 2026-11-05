@@ -6,7 +6,7 @@ import {
   updateApplicant,
 } from "../repositories/applicantRepository.js";
 
-const pageSize = 15;
+const pageSize = 10;
 
 const validateId = (id) => {
   if (!/^\d+$/.test(String(id)) || !Number.isSafeInteger(Number(id)) || Number(id) <= 0) {

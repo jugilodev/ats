@@ -1,0 +1,1870 @@
+{
+  "name": "logic_killer_question",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -608,
+        -240
+      ],
+      "id": "a0f7932c-ac2c-43e6-a42d-60747a2785eb",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "HuyZK8rzh6zssMoL",
+          "mode": "list",
+          "cachedResultName": "killer_question_control",
+          "cachedResultUrl": "/projects/D8adguWe8HbrjImk/datatables/HuyZK8rzh6zssMoL"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "celular",
+              "keyValue": "={{ $json.celular }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -384,
+        -240
+      ],
+      "id": "0073bcfb-5251-4f02-96f5-92f0b7222c3e",
+      "name": "Get row(s)",
+      "alwaysOutputData": true,
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "4b262225-5dc4-427b-9614-7d1fde171c0d",
+              "leftValue": "={{ $json.isEmpty() }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -160,
+        -240
+      ],
+      "id": "8a7c86dd-6094-467e-83c1-a32240397012",
+      "name": "If",
+      "alwaysOutputData": false,
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "killer_questions",
+          "mode": "list",
+          "cachedResultName": "killer_questions"
+        },
+        "where": {
+          "values": [
+            {
+              "column": "vacante_id",
+              "value": "={{ $('When Executed by Another Workflow').item.json.id_vacante }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        64,
+        -432
+      ],
+      "id": "6f8bc584-feaf-4cad-b8f4-145da907de0b",
+      "name": "Select rows from a table",
+      "credentials": {
+        "postgres": {
+          "id": "UnJ0BXflKRFKQ0Uj",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sortFieldsUi": {
+          "sortField": [
+            {
+              "fieldName": "id"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.sort",
+      "typeVersion": 1,
+      "position": [
+        288,
+        -432
+      ],
+      "id": "6812a0a4-38be-4b9f-be0b-aefaed5384db",
+      "name": "Sort"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "HuyZK8rzh6zssMoL",
+          "mode": "list",
+          "cachedResultName": "killer_question_control",
+          "cachedResultUrl": "/projects/D8adguWe8HbrjImk/datatables/HuyZK8rzh6zssMoL"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id_vacante": "={{ $json.vacante_id }}",
+            "celular": "={{ $('When Executed by Another Workflow').item.json.celular }}",
+            "id_killer_question": "={{ $json.id }}",
+            "respuesta_esperada": "={{ $json.respuesta_esperada }}",
+            "killer_question": "={{ $json.nombre }}",
+            "cant_respondidas": 0,
+            "preguntada": false
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "id_vacante",
+              "displayName": "id_vacante",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "celular",
+              "displayName": "celular",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "id_killer_question",
+              "displayName": "id_killer_question",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "killer_question",
+              "displayName": "killer_question",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "respuesta_esperada",
+              "displayName": "respuesta_esperada",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "respuesta_usuario",
+              "displayName": "respuesta_usuario",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "preguntada",
+              "displayName": "preguntada",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "cant_killer_question",
+              "displayName": "cant_killer_question",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "cant_respondidas",
+              "displayName": "cant_respondidas",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        512,
+        -432
+      ],
+      "id": "18e0334c-2abb-42db-b332-4aade76755df",
+      "name": "Insert row"
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "={{ $('When Executed by Another Workflow').item.json.bot }}",
+        "remoteJid": "={{ $('When Executed by Another Workflow').item.json.celular }}",
+        "messageText": "={{ $json.killer_question }}",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        1184,
+        -432
+      ],
+      "id": "6c40834b-bd87-4b51-9e83-1ac3f5102a36",
+      "name": "Enviar texto",
+      "executeOnce": false,
+      "credentials": {
+        "evolutionApi": {
+          "id": "zdO8ryhUxv62GUmU",
+          "name": "Evolution account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "HuyZK8rzh6zssMoL",
+          "mode": "list",
+          "cachedResultName": "killer_question_control",
+          "cachedResultUrl": "/projects/D8adguWe8HbrjImk/datatables/HuyZK8rzh6zssMoL"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "celular",
+              "keyValue": "={{ $('When Executed by Another Workflow').item.json.celular }}"
+            },
+            {
+              "keyName": "preguntada",
+              "condition": "isTrue"
+            },
+            {
+              "keyName": "respuesta_usuario",
+              "condition": "isEmpty"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        64,
+        -144
+      ],
+      "id": "9879afc3-e380-4069-8b36-dff10ab64308",
+      "name": "Get row(s)1",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "lLOvDZeq7u8qGSp4",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/lLOvDZeq7u8qGSp4",
+          "cachedResultName": "validador_intencion"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        512,
+        -144
+      ],
+      "id": "9c7a9504-8155-4fd2-9bff-d5242cdc01d2",
+      "name": "Call 'validador_intencion'"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d9cbd2cd-1646-4e33-9b94-90894a60b270",
+              "name": "celular",
+              "value": "={{ $json.celular }}",
+              "type": "string"
+            },
+            {
+              "id": "a0c028c7-3f12-4a97-857b-833ad13dcfb9",
+              "name": "mensaje",
+              "value": "={{ $('When Executed by Another Workflow').item.json.mensaje }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        288,
+        -144
+      ],
+      "id": "d91d1c63-8fb5-431a-951c-f2980a52729d",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "abf61de3-f45f-4d3a-a047-72f443ca251d",
+              "leftValue": "={{ $json.res }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        736,
+        -144
+      ],
+      "id": "03c5ed4a-eb89-4d5d-ac50-56979349cd2b",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "HuyZK8rzh6zssMoL",
+          "mode": "list",
+          "cachedResultName": "killer_question_control",
+          "cachedResultUrl": "/projects/D8adguWe8HbrjImk/datatables/HuyZK8rzh6zssMoL"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyValue": "={{ $('Get row(s)1').item.json.id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "respuesta_usuario": "si"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "id_vacante",
+              "displayName": "id_vacante",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "celular",
+              "displayName": "celular",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "id_killer_question",
+              "displayName": "id_killer_question",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "killer_question",
+              "displayName": "killer_question",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "respuesta_esperada",
+              "displayName": "respuesta_esperada",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "respuesta_usuario",
+              "displayName": "respuesta_usuario",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "preguntada",
+              "displayName": "preguntada",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "cant_killer_question",
+              "displayName": "cant_killer_question",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "cant_respondidas",
+              "displayName": "cant_respondidas",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        960,
+        -240
+      ],
+      "id": "243bb4b1-5ff3-4e75-aebb-51c20d79a590",
+      "name": "Update row(s)"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "HuyZK8rzh6zssMoL",
+          "mode": "list",
+          "cachedResultName": "killer_question_control",
+          "cachedResultUrl": "/projects/D8adguWe8HbrjImk/datatables/HuyZK8rzh6zssMoL"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyValue": "={{ $('Get row(s)1').item.json.id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "respuesta_usuario": "no"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "id_vacante",
+              "displayName": "id_vacante",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "celular",
+              "displayName": "celular",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "id_killer_question",
+              "displayName": "id_killer_question",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "killer_question",
+              "displayName": "killer_question",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "respuesta_esperada",
+              "displayName": "respuesta_esperada",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "respuesta_usuario",
+              "displayName": "respuesta_usuario",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "preguntada",
+              "displayName": "preguntada",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "cant_killer_question",
+              "displayName": "cant_killer_question",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "cant_respondidas",
+              "displayName": "cant_respondidas",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        960,
+        -48
+      ],
+      "id": "40c89503-8a6f-46d8-a552-2790c24e138e",
+      "name": "Update row(s)1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "e859ce1f-2801-47fa-9c74-25f82550bd6a",
+              "leftValue": "={{ $json.respuesta_esperada }}",
+              "rightValue": "={{ $json.respuesta_usuario }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1184,
+        -144
+      ],
+      "id": "f3efc992-23a8-4e18-b544-7687d60bf64d",
+      "name": "If3"
+    },
+    {
+      "parameters": {
+        "sortFieldsUi": {
+          "sortField": [
+            {
+              "fieldName": "id"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.sort",
+      "typeVersion": 1,
+      "position": [
+        736,
+        -432
+      ],
+      "id": "1f134348-a852-438d-af58-61a04bf4a2c5",
+      "name": "Sort2",
+      "alwaysOutputData": false,
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "HuyZK8rzh6zssMoL",
+          "mode": "list",
+          "cachedResultName": "killer_question_control",
+          "cachedResultUrl": "/projects/D8adguWe8HbrjImk/datatables/HuyZK8rzh6zssMoL"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyValue": "={{ $json.id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "preguntada": true
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "id_vacante",
+              "displayName": "id_vacante",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "celular",
+              "displayName": "celular",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "id_killer_question",
+              "displayName": "id_killer_question",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "killer_question",
+              "displayName": "killer_question",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "respuesta_esperada",
+              "displayName": "respuesta_esperada",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "respuesta_usuario",
+              "displayName": "respuesta_usuario",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "preguntada",
+              "displayName": "preguntada",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "cant_killer_question",
+              "displayName": "cant_killer_question",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "cant_respondidas",
+              "displayName": "cant_respondidas",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1632,
+        -432
+      ],
+      "id": "673edf08-1485-46f1-996f-2826aacdd2f1",
+      "name": "Update row(s)2"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "HuyZK8rzh6zssMoL",
+          "mode": "list",
+          "cachedResultName": "killer_question_control",
+          "cachedResultUrl": "/projects/D8adguWe8HbrjImk/datatables/HuyZK8rzh6zssMoL"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "celular",
+              "keyValue": "={{ $('When Executed by Another Workflow').item.json.celular }}"
+            },
+            {
+              "keyName": "killer_question",
+              "keyValue": "={{ $json.data.message.conversation }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1408,
+        -432
+      ],
+      "id": "d512e5b9-bd1c-4eef-81a8-4c4402f053bc",
+      "name": "Get row(s)2"
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "={{ $('When Executed by Another Workflow').item.json.bot }}",
+        "remoteJid": "={{ $('When Executed by Another Workflow').item.json.celular }}",
+        "messageText": "={{ $json.mensaje }}",
+        "options_message": {
+          "delay": 3000
+        }
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        1632,
+        48
+      ],
+      "id": "2e95f785-c53f-4fd0-aa3b-697a09be633c",
+      "name": "Enviar texto1",
+      "executeOnce": false,
+      "credentials": {
+        "evolutionApi": {
+          "id": "zdO8ryhUxv62GUmU",
+          "name": "Evolution account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "Ct4FUH9mWoLewM0o",
+          "mode": "list",
+          "cachedResultName": "control_contacto_ats",
+          "cachedResultUrl": "/projects/D8adguWe8HbrjImk/datatables/Ct4FUH9mWoLewM0o"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "celular",
+              "keyValue": "={{ $('When Executed by Another Workflow').item.json.celular }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "estado": "descartado"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "id_aspirante",
+              "displayName": "id_aspirante",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "apellido",
+              "displayName": "apellido",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "celular",
+              "displayName": "celular",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "id_vacante",
+              "displayName": "id_vacante",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "vacante",
+              "displayName": "vacante",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "estado",
+              "displayName": "estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1856,
+        48
+      ],
+      "id": "ceadd5ba-bf3f-44cf-bcbe-244e0362560e",
+      "name": "Update row(s)3"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "HuyZK8rzh6zssMoL",
+          "mode": "list",
+          "cachedResultName": "killer_question_control",
+          "cachedResultUrl": "/projects/D8adguWe8HbrjImk/datatables/HuyZK8rzh6zssMoL"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "celular",
+              "keyValue": "={{ $('When Executed by Another Workflow').item.json.celular }}"
+            },
+            {
+              "keyName": "respuesta_usuario",
+              "condition": "isEmpty"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1408,
+        -240
+      ],
+      "id": "1a2e2020-0b63-455d-9d55-041faba9bb93",
+      "name": "Get row(s)3",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "9b998453-3cda-4b07-8df2-c1354af899e5",
+              "leftValue": "={{ $json.isEmpty() }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1632,
+        -240
+      ],
+      "id": "2e029f71-e663-4221-9b69-d523c658f52e",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "sortFieldsUi": {
+          "sortField": [
+            {
+              "fieldName": "id"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.sort",
+      "typeVersion": 1,
+      "position": [
+        1856,
+        -144
+      ],
+      "id": "d2d35446-5f10-48f4-beaa-821e8fef26f3",
+      "name": "Sort3",
+      "alwaysOutputData": false,
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "={{ $('When Executed by Another Workflow').item.json.bot }}",
+        "remoteJid": "={{ $('When Executed by Another Workflow').item.json.celular }}",
+        "messageText": "={{ $json.killer_question }}",
+        "options_message": {
+          "delay": 3000,
+          "quoted": {}
+        }
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        2240,
+        -144
+      ],
+      "id": "d39eae77-0e13-4665-a7d5-da40bc413751",
+      "name": "Enviar texto2",
+      "executeOnce": false,
+      "credentials": {
+        "evolutionApi": {
+          "id": "zdO8ryhUxv62GUmU",
+          "name": "Evolution account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "HuyZK8rzh6zssMoL",
+          "mode": "list",
+          "cachedResultName": "killer_question_control",
+          "cachedResultUrl": "/projects/D8adguWe8HbrjImk/datatables/HuyZK8rzh6zssMoL"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "celular",
+              "keyValue": "={{ $('When Executed by Another Workflow').item.json.celular }}"
+            },
+            {
+              "keyName": "killer_question",
+              "keyValue": "={{ $json.data.message.conversation }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2528,
+        -144
+      ],
+      "id": "92940524-f89c-4088-b7b3-2fa53eb6074d",
+      "name": "Get row(s)4"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "HuyZK8rzh6zssMoL",
+          "mode": "list",
+          "cachedResultName": "killer_question_control",
+          "cachedResultUrl": "/projects/D8adguWe8HbrjImk/datatables/HuyZK8rzh6zssMoL"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyValue": "={{ $json.id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "preguntada": true
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "id_vacante",
+              "displayName": "id_vacante",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "celular",
+              "displayName": "celular",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "id_killer_question",
+              "displayName": "id_killer_question",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "killer_question",
+              "displayName": "killer_question",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "respuesta_esperada",
+              "displayName": "respuesta_esperada",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "respuesta_usuario",
+              "displayName": "respuesta_usuario",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "preguntada",
+              "displayName": "preguntada",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "cant_killer_question",
+              "displayName": "cant_killer_question",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "cant_respondidas",
+              "displayName": "cant_respondidas",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2752,
+        -144
+      ],
+      "id": "c91450b9-4357-40af-9d78-8e06e10410d7",
+      "name": "Update row(s)4"
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "={{ $('When Executed by Another Workflow').item.json.bot }}",
+        "remoteJid": "={{ $('When Executed by Another Workflow').item.json.celular }}",
+        "messageText": "Estos son los horarios disponibles",
+        "options_message": {
+          "delay": 3000
+        }
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        2304,
+        -336
+      ],
+      "id": "9ca83a8e-b536-4786-bbdd-8f04c14d8a1c",
+      "name": "Enviar texto3",
+      "credentials": {
+        "evolutionApi": {
+          "id": "zdO8ryhUxv62GUmU",
+          "name": "Evolution account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "Ct4FUH9mWoLewM0o",
+          "mode": "list",
+          "cachedResultName": "control_contacto_ats",
+          "cachedResultUrl": "/projects/D8adguWe8HbrjImk/datatables/Ct4FUH9mWoLewM0o"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "celular",
+              "keyValue": "={{ $('When Executed by Another Workflow').item.json.celular }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "estado": "agendar"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "id_aspirante",
+              "displayName": "id_aspirante",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "apellido",
+              "displayName": "apellido",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "celular",
+              "displayName": "celular",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "id_vacante",
+              "displayName": "id_vacante",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "vacante",
+              "displayName": "vacante",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "estado",
+              "displayName": "estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1856,
+        -336
+      ],
+      "id": "81871163-f8ae-451f-806b-a3d111a6a5a0",
+      "name": "Update row(s)5"
+    },
+    {
+      "parameters": {
+        "amount": 3
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        960,
+        -432
+      ],
+      "id": "dfbdff24-7179-41d5-9301-cd94031ac7f6",
+      "name": "Wait1",
+      "webhookId": "c7ab25be-3323-49bc-b7c5-510fe6a81626"
+    },
+    {
+      "parameters": {
+        "amount": 3
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -608,
+        -656
+      ],
+      "id": "bb14c810-b098-44c1-bea5-139cc31f7d2c",
+      "name": "Wait2",
+      "webhookId": "c7ab25be-3323-49bc-b7c5-510fe6a81626"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f28e7384-944d-4db1-abea-c052be576d54",
+              "name": "mensaje",
+              "value": "Gracias por postularte, sigue intentando",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1392,
+        -16
+      ],
+      "id": "52ce10b5-5105-4106-b261-7a894606dc0c",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f28e7384-944d-4db1-abea-c052be576d54",
+              "name": "mensaje",
+              "value": "Estos son los horarios disponibles",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2032,
+        -336
+      ],
+      "id": "3d2b61a3-1895-4981-a495-31e2aa9d8d40",
+      "name": "Edit Fields2"
+    }
+  ],
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "celular": "573128132757",
+          "mensaje": "Si",
+          "id_vacante": 14,
+          "bot": "Bot"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Get row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s)": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Select rows from a table",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get row(s)1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Select rows from a table": {
+      "main": [
+        [
+          {
+            "node": "Sort",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sort": {
+      "main": [
+        [
+          {
+            "node": "Insert row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert row": {
+      "main": [
+        [
+          {
+            "node": "Sort2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s)1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'validador_intencion'": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Call 'validador_intencion'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Update row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update row(s)1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row(s)": {
+      "main": [
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sort2": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar texto": {
+      "main": [
+        [
+          {
+            "node": "Get row(s)2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row(s)2": {
+      "main": [
+        []
+      ]
+    },
+    "Get row(s)2": {
+      "main": [
+        [
+          {
+            "node": "Update row(s)2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If3": {
+      "main": [
+        [
+          {
+            "node": "Get row(s)3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar texto1": {
+      "main": [
+        [
+          {
+            "node": "Update row(s)3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s)3": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Update row(s)5",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Sort3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sort3": {
+      "main": [
+        [
+          {
+            "node": "Enviar texto2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar texto2": {
+      "main": [
+        [
+          {
+            "node": "Get row(s)4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s)4": {
+      "main": [
+        [
+          {
+            "node": "Update row(s)4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row(s)5": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row(s)1": {
+      "main": [
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "Enviar texto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Enviar texto1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Enviar texto3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "59b79e75-97b9-4960-bb7f-b741c7df25be",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "cbd38a5cdc734e038bcf6569e6ca8fb90d806bc793358aca03c0d3c1a8f08c8e"
+  },
+  "id": "89oqdJBIE5jZ0Xir",
+  "tags": []
+}
