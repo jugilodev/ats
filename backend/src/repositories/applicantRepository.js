@@ -20,6 +20,7 @@ export const findApplicants = async ({ limit, offset }) => {
               autorizacion.estado AS autorizacion_estado,
               autorizacion.enviada_en AS autorizacion_enviada_en,
               autorizacion.expira_en AS autorizacion_expira_en,
+              autorizacion.firmada_en AS autorizacion_firmada_en,
               prueba.estado AS prueba16pf_estado,
               prueba.invitacion_enviada_en AS prueba16pf_enviada_en,
               prueba.invitacion_expira_en AS prueba16pf_expira_en,

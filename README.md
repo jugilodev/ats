@@ -8,6 +8,8 @@ La tabla `postulaciones` asocia cada aspirante con una vacante y conserva por se
 
 En la tabla de aspirantes, cada postulación muestra un indicador de clasificación (verde si pasó, rojo si no pasó y gris si está pendiente). La opción **Ver detalle** presenta la descripción/motivo y el estado de esa postulación.
 
+Cuando el tratamiento de datos está firmado, la acción **Ver documento firmado** abre un PDF con el texto exacto aceptado, su versión, los datos de identificación, la cédula confirmada, la fecha de firma y la firma dibujada. El endpoint requiere una sesión ATS; los PDFs se generan desde el registro firmado y se guardan en `backend/documents/consentimientos-firmados/`, carpeta excluida de Git. Opcionalmente, `SIGNED_CONSENTS_DIR` permite cambiar esa ubicación.
+
 ### Hojas de vida por postulación
 
 Cada CV se asocia con la fila correspondiente de `postulaciones` mediante `cv_ruta`; no se guarda en el aspirante global. Para una base existente, aplica `backend/database/migrations/005_postulacion_cv.sql`. Configura en `backend/.env`:

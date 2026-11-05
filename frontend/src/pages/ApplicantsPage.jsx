@@ -144,62 +144,219 @@ function ApplicantsTable({
               </td>
               <td data-label="Acciones">
                 <div className="applicant-actions">
+                  {applicant.autorizacion_estado === "firmada" && (
+                    <a
+                      aria-label="Ver documento firmado de tratamiento de datos"
+                      className="applicant-icon-button"
+                      href={`${apiUrl}/aspirantes/${encodeURIComponent(applicant.id)}/tratamiento/pdf`}
+                      rel="noopener noreferrer"
+                      title="Ver documento firmado de tratamiento de datos"
+                      target="_blank"
+                    >
+                      <svg
+                        aria-hidden="true"
+                        fill="none"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        width="18"
+                      >
+                        <path
+                          d="M7 3.75h7l4 4v12.5H7a2 2 0 0 1-2-2v-12.5a2 2 0 0 1 2-2Z"
+                          stroke="currentColor"
+                          strokeLinejoin="round"
+                          strokeWidth="1.7"
+                        />
+                        <path
+                          d="M14 4v4h4M8 13h8m-8 3h8"
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="1.7"
+                        />
+                      </svg>
+                    </a>
+                  )}
+                  {applicant.autorizacion_estado !== "firmada" && (
+                    <button
+                      aria-label={
+                        applicant.autorizacion_estado
+                          ? "Reenviar autorización por correo"
+                          : "Enviar autorización por correo"
+                      }
+                      className="applicant-icon-button"
+                      disabled={sendingId === applicant.id}
+                      onClick={() => onSendAuthorization(applicant)}
+                      title={
+                        sendingId === applicant.id
+                          ? "Enviando autorización..."
+                          : applicant.autorizacion_estado
+                            ? "Reenviar autorización por correo"
+                            : "Enviar autorización por correo"
+                      }
+                      type="button"
+                    >
+                      <svg
+                        aria-hidden="true"
+                        fill="none"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        width="18"
+                      >
+                        <path
+                          d="M4 6.75h11.5A2.5 2.5 0 0 1 18 9.25v8A2.5 2.5 0 0 1 15.5 19.75h-9A2.5 2.5 0 0 1 4 17.25v-10.5Z"
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="1.7"
+                        />
+                        <path
+                          d="m5 7.5 6 5 5.2-4.35M15.5 4.25H20m0 0v4.5m0-4.5-5.25 5.25"
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="1.7"
+                        />
+                      </svg>
+                    </button>
+                  )}
                   <button
-                    className="text-button"
-                    disabled={
-                      applicant.autorizacion_estado === "firmada" ||
-                      sendingId === applicant.id
+                    aria-label={
+                      applicant.prueba16pf_estado === "completada"
+                        ? "Prueba 16PF completada"
+                        : applicant.prueba16pf_estado
+                          ? "Reenviar prueba 16PF por correo"
+                          : "Enviar prueba 16PF por correo"
                     }
-                    onClick={() => onSendAuthorization(applicant)}
-                    type="button"
-                  >
-                    {sendingId === applicant.id
-                      ? "Enviando..."
-                      : applicant.autorizacion_estado
-                        ? "Reenviar autorización"
-                        : "Enviar autorización"}
-                  </button>
-                  <button
-                    className="text-button"
+                    className="applicant-icon-button"
                     disabled={
                       applicant.prueba16pf_estado === "completada" ||
                       sendingExamId === applicant.id
                     }
                     onClick={() => onSendExam(applicant)}
+                    title={
+                      sendingExamId === applicant.id
+                        ? "Enviando prueba 16PF..."
+                        : applicant.prueba16pf_estado === "completada"
+                          ? "Prueba 16PF completada"
+                          : applicant.prueba16pf_estado
+                            ? "Reenviar prueba 16PF por correo"
+                            : "Enviar prueba 16PF por correo"
+                    }
                     type="button"
                   >
-                    {sendingExamId === applicant.id
-                      ? "Enviando..."
-                      : applicant.prueba16pf_estado
-                        ? "Reenviar prueba 16PF"
-                        : "Enviar prueba 16PF"}
+                    <svg
+                      aria-hidden="true"
+                      fill="none"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      width="18"
+                    >
+                      <path
+                        d="M8 5.25h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2v-12a2 2 0 0 1 2-2Z"
+                        stroke="currentColor"
+                        strokeLinejoin="round"
+                        strokeWidth="1.7"
+                      />
+                      <path
+                        d="M9 5.25v-1a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1M9 10h6m-6 4h6m-6 4h3"
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="1.7"
+                      />
+                      <path
+                        d="m8.6 10 .8.8 1.4-1.6m-2.2 5.6.8.8 1.4-1.6m-2.2 5.6.8.8.9-1"
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeWidth="1.5"
+                      />
+                    </svg>
                   </button>
                   {applicant.prueba16pf_estado === "completada" && (
                     <button
-                        className="text-button"
-                        disabled={reportBusy}
-                        onClick={() => onGenerateReport(applicant)}
-                        type="button"
+                      aria-label="Generar guía exploratoria 16PF"
+                      className="applicant-icon-button"
+                      disabled={reportBusy}
+                      onClick={() => onGenerateReport(applicant)}
+                      title={
+                        generatingReportId === applicant.id
+                          ? "Cargando postulaciones para la guía 16PF..."
+                          : "Generar guía exploratoria 16PF"
+                      }
+                      type="button"
                     >
-                        {generatingReportId === applicant.id
-                          ? "Cargando postulaciones..."
-                          : "Generar guía 16PF"}
+                      <svg
+                        aria-hidden="true"
+                        fill="none"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        width="18"
+                      >
+                        <path
+                          d="M12 3.75v2.5m0 12v2m8.25-8.25h-2.5m-11.5 0h-2.5m14.1-5.85-1.75 1.75m-8.2 8.2-1.75 1.75m11.7 0-1.75-1.75m-8.2-8.2L5.9 6.15"
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeWidth="1.7"
+                        />
+                        <circle
+                          cx="12"
+                          cy="12"
+                          r="4.25"
+                          stroke="currentColor"
+                          strokeWidth="1.7"
+                        />
+                      </svg>
                     </button>
                   )}
                   <button
-                    className="text-button"
+                    aria-label={`Editar a ${applicant.nombre} ${applicant.apellido}`}
+                    className="applicant-icon-button"
                     onClick={() => onEdit(applicant)}
+                    title="Editar aspirante"
                     type="button"
                   >
-                    Editar
+                    <svg
+                      aria-hidden="true"
+                      fill="none"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      width="18"
+                    >
+                      <path
+                        d="m14.25 5.25 4.5 4.5m-11.5 9.5 3.65-.75L20 9.4a2.12 2.12 0 0 0-3-3l-9.1 9.1-.65 3.75ZM5 20.25h14"
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="1.7"
+                      />
+                    </svg>
                   </button>
                   <button
-                    className="text-button delete-button"
+                    aria-label={`Eliminar a ${applicant.nombre} ${applicant.apellido}`}
+                    className="applicant-icon-button danger"
                     disabled={deletingId === applicant.id}
                     onClick={() => onDelete(applicant)}
+                    title={
+                      deletingId === applicant.id
+                        ? "Eliminando aspirante..."
+                        : "Eliminar aspirante"
+                    }
                     type="button"
                   >
-                    {deletingId === applicant.id ? "Eliminando..." : "Eliminar"}
+                    <svg
+                      aria-hidden="true"
+                      fill="none"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      width="18"
+                    >
+                      <path
+                        d="m7 7 10 10M17 7 7 17"
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeWidth="1.9"
+                      />
+                    </svg>
                   </button>
                 </div>
               </td>
