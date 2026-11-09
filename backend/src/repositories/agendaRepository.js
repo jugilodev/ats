@@ -103,9 +103,9 @@ export const findAgenda = async (today) => {
                      json_build_object(
                        'id', a.id,
                        'nombre', a.nombre,
-                       'apellido', a.apellido
+                       'apellido', COALESCE(to_jsonb(a)->>'apellido', '')
                      )
-                     ORDER BY a.apellido, a.nombre
+                     ORDER BY COALESCE(to_jsonb(a)->>'apellido', ''), a.nombre
                    )
                    FROM agenda_asignaciones aa
                    JOIN aspirantes a ON a.id = aa.aspirante_id
@@ -139,13 +139,14 @@ export const findAgenda = async (today) => {
 
 export const findAvailableApplicants = async () => {
   const result = await pool.query(
-    `SELECT a.id, a.nombre, a.apellido
+    `SELECT a.id, a.nombre,
+            COALESCE(to_jsonb(a)->>'apellido', '') AS apellido
      FROM aspirantes a
      WHERE NOT EXISTS (
        SELECT 1 FROM agenda_asignaciones aa
        WHERE aa.aspirante_id = a.id
      )
-     ORDER BY a.apellido, a.nombre`,
+     ORDER BY COALESCE(to_jsonb(a)->>'apellido', ''), a.nombre`,
   );
   return result.rows;
 };
